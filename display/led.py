@@ -45,6 +45,47 @@ class LEDDisplay:
 
         self.pixels.show()
 
+    def clear(self) -> None:
+        """
+        Clear the LED strip
+        """
+        self.pixels.fill((0, 0, 0))
+
+    def set_brightness(self, brightness: float) -> None:
+        """
+        Set the brightness of the LED strip
+
+        :param brightness: The brightness to set
+        """
+        self.pixels.brightness = brightness
+
+    def set_pixel(self, index: int, color: tuple) -> None:
+        """
+        Set the color of a single pixel
+
+        :param index: The index of the pixel
+        :param color: The color to set
+        """
+        self.pixels[index] = color
+
+    def set_pixels(self, colors: list) -> None:
+        """
+        Set the colors of multiple pixels
+
+        :param colors: The colors to set
+        """
+        for i, color in enumerate(colors):
+            self.pixels[i] = color
+
+    def set_all_pixels(self, color: tuple) -> None:
+        """
+        Set the color of all pixels
+
+        :param color: The color to set
+        """
+        self.pixels.fill(color)
+
+
 
 if __name__ == "__main__":
     ld = LEDDisplay(3, 10, start_bottom=False)
