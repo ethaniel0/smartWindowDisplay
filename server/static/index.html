@@ -7,5 +7,22 @@
 </head>
 <body>
     <div>rutgiruytirty</div>
+
+    <input type="text">
+    <button onclick="sendData()">Send</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        socket.on('message', function(data) {
+            console.log(data);
+        });
+
+        function sendData(){
+            var input = document.querySelector('input');
+            console.log('sending', input.value);
+            socket.emit('message', input.value);
+        }
+    </script>
 </body>
 </html>
