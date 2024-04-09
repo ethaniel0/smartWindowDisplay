@@ -19,6 +19,8 @@ class ProgramManager:
         if self.state == "main":
             self.state = "main"
         
+        found = False
+        
         for key in self.pages:
             if not isinstance(self.pages[key], list):
                 continue
@@ -26,9 +28,20 @@ class ProgramManager:
             for item in self.pages[key]:
                 if item == self.state:
                     self.state = key
-                    return self.pages[key]    
+                    found = True
+                    break
+            if found:
+                break  
         
-        return self.pages[self.state]
+        name_list = []
+        for name in self.pages[self.state]:
+            if isinstance(name, str):
+                name_list.append(name)
+            else:
+                name_list.append(name.name)
+        if self.state != 'main':
+            name_list.append('Back')
+        return name_list
         
     def get_page(self, page) -> list | str:
         if page not in self.pages:

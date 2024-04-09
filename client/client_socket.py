@@ -2,6 +2,7 @@ import socketio
 import time
 import random
 import program_manager
+import time
 
 #For connecting to the server:
 link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
@@ -50,6 +51,11 @@ def press_item(data):
 def disconnect():
     print('Disconnected from server')
 
+last_time = time.time()
+update_frequency = 0.1
+
+last_time = time.perf_counter()
+
 def main():
     while True:
         if not sio.connected:
@@ -60,7 +66,10 @@ def main():
                 print("Failed to estabolish connection to server: ", link)
                 print("Trying again...")
                 time.sleep(2)
-        pass
+        
+        if (time.perf_counter() - last_time) > update_frequency:
+            last_time = time.perf_counter()
+            manager.update_program()
 
 if __name__ == '__main__':
     main()
