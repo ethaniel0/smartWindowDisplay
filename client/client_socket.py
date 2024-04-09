@@ -1,17 +1,14 @@
 import socketio
 import time
 import random
+import program_manager
 
 #For connecting to the server:
-# link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
-link = 'http://localhost:3000/'
+link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
+# link = 'http://localhost:3000/'
 sio = socketio.Client()
 
-#program vairables: 
-programState = 'start'
-display_options = ['Duke Games', 'Weather', 'Games']
-game_options = ['Simon', 'Tic Tac Toe', 'Snake', 'Maze']
-Simon_options = ['Red', 'Blue', 'Green', 'Yellow']
+manager = program_manager.ProgramManager(sio)
 
 #Pi Messages:
 
@@ -33,13 +30,25 @@ def onpiinit(data):
 def on_join(data):
     print('Joined: ', data)
     if data == 'success':
-        print("Current display options: ", display_options)
-        sio.emit('programList', display_options)
-
+        options = manager.get_page(manager.state)
+        sio.emit('programList', options)
+        
+@sio.on('press')
+def press_item(data):
+    print('Pressed: ', data)
+    if data == 'Back':
+        options = manager.go_one_page_up()
+        sio.emit('programList', options)
+    else:
+        options = manager.get_page(data)
+        if options == '':
+            sio.emit('programList', ['Back'])
+        sio.emit('programList', options)
+            
 #on disconnect
 @sio.event
 def disconnect():
-    print('disconnected from server')
+    print('Disconnected from server')
 
 def main():
     while True:

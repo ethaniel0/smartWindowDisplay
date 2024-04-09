@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const http = require("http");
-const { join } = require("path");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
@@ -23,9 +22,9 @@ io.on("connection", (socket) => {
 
   // USER MESSAGES
   socket.on("tryConnect", () => {
-    // if (userSocket) {
-    //   return socket.emit("tryConnect", "already connected");
-    // }
+    if (userSocket) {
+      return socket.emit("tryConnect", "already connected");
+    }
     console.log("trying to connect");
     socket.emit("tryConnect", "received");
     io.to("pi").emit("tryConnect");
