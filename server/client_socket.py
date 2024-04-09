@@ -2,18 +2,17 @@ import socketio
 import time
 import random
 
+#For connecting to the server:
 link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
-
 sio = socketio.Client()
-connected = False
-while not connected:
-    try: 
-        sio.connect(link)
-        connected = True
-    except:
-        print("Failed to estabolish connection to server: ", link)
-        print("Trying again...")
-        time.sleep(5)
+
+#program vairables: 
+programState = 'start'
+display_options = ['Duke Games', 'Weather', 'Games']
+game_options = ['Simon', 'Tic Tac Toe', 'Snake', 'Maze']
+Simon_options = ['Red', 'Blue', 'Green', 'Yellow']
+
+#Pi Messages:
 
 @sio.on('tryConnect')
 def on_message():
@@ -29,12 +28,30 @@ def on_message():
 def onpiinit(data):
     print('Pi connected: ', data)
 
-@sio.on('piJoinCode')
-def onpiinit(data):
-    print('Pi: ', data)
+@sio.on('joinCode')
+def on_join(data):
+    print('Joined: ', data)
+    if data == 'success':
+        print("Current display options: ", display_options)
+        sio.emit('programList', display_options)
 
-sio.emit('supersecretpimessage', '3.1415926535897932384626433832769')
+#on disconnect
+@sio.event
+def disconnect():
+    print('disconnected from server')
 
-while True:
-    pass
+def main():
+    while True:
+        if not sio.connected:
+            try: 
+                sio.connect(link)
+                sio.emit('supersecretpimessage', '3.1415926535897932384626433832769')
+            except:
+                print("Failed to estabolish connection to server: ", link)
+                print("Trying again...")
+                time.sleep(2)
+        pass
+
+if __name__ == '__main__':
+    main()
 
