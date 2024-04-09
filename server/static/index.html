@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Test Environment</title>
 </head>
 <body>
-    <div>rutgiruytirty</div>
 
-    <input type="text">
-    <button onclick="sendData()">Send</button>
+    <button onClick="connect()">Connect</button>
+
+    <div id='buttons'>
+      
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -17,6 +19,34 @@
         socket.on('message', function(data) {
             console.log(data);
         });
+
+      socket.on('programList', list => {
+        let btnDiv = document.getElementById('buttons');
+        btnDiv.innerHTML = '';
+        for (let item of list){
+          // make button with text "item"
+          let btn = document.createElement('button');
+          btn.innerHTML = item;
+          btn.onclick = () => socket.emit('chooseProgram', item);
+          btnDiv.appendChild(btn);
+        }
+      });
+
+      socket.on('joinCode', msg => {
+        if (msg == 'success'){
+          console.log('joined');
+        }
+      })
+
+      function connect(){
+        console.log('trying to connect over here');
+        socket.emit("tryConnect");
+        let inputElement = document.createElement('input');
+        inputElement.id = 'joinCode';
+        inputElement.placeholder = 'Join Code';
+        inputElement.onchange = () => socket.emit('joinCode', inputElement.value);
+        document.body.appendChild(inputElement);
+      }
 
         function sendData(){
             var input = document.querySelector('input');

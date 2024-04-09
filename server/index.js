@@ -22,18 +22,19 @@ io.on('connection', (socket) => {
     });
 
     // USER MESSAGES
-    socket.on('tryConnect', msg => {
+    socket.on('tryConnect', () => {
         if (userSocket){
             return socket.emit('tryConnect', 'already connected');
         }
-        socket.emit('tryConnect', 'received');
-        io.to('pi').emit('tryConnect');
-
-        userSocket = socket.id;
+      console.log('trying to connect');
+      socket.emit('tryConnect', 'received');
+      io.to('pi').emit('tryConnect');
     });
 
     socket.on('joinCode', msg => {
+      console.log('join code', msg);
         if (msg == joinCode) {
+          console.log('YAYAYYAAYAYYAY');
             userSocket = socket;
             socket.emit('joinCode', 'success');
         }
@@ -50,27 +51,35 @@ io.on('connection', (socket) => {
     socket.on('supersecretpimessage', msg => {
         if (msg == "3.1415926535897932384626433832769") {
             socket.join('pi');
-            socket.emit('message', "pi message received");
+            socket.emit('supersecretpimessage', "success");
             piSocket = socket;
         }
     })
 
     socket.on('piJoinCode', msg => {
+      console.log("got a join code", msg)
         if (piSocket && socket.id == piSocket.id) {
+          console.log('setting join code');
             joinCode = msg;
         }
     });
 
+    socket.on('programList', msg => {
+        if (userSocket) {
+            io.to(userSocket).emit('programList', msg);
+        }
+    });
+
     socket.on('disconnect', () => {
-        if (socket.id == piSocket.id) {
+        if (piSocket && socket.id == piSocket.id) {
             piSocket = null;
         }
-        else if (socket.id == userSocket.id) {
+        else if (userSocket && socket.id == userSocket.id) {
             userSocket = null;
         }
     })
 });
-  
+
 
 server.listen(port, () => {
   console.log(`Example app listening on port http://localhost:${port}`)
