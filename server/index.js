@@ -32,23 +32,21 @@ io.on("connection", (socket) => {
   });
 
   socket.on("joinCode", (msg) => {
-    console.log("join code", msg);
     if (msg == joinCode) {
-      console.log("YAYAYYAAYAYYAY");
       userSocket = socket;
+      socket.join("user");
       socket.emit("joinCode", "success");
       io.to("pi").emit("joinCode", "success");
-      console.log("sent success");
     } else {
       socket.emit("joinCode", "fail");
       io.to("pi").emit("joinCode", "fail");
     }
   });
 
-  socket.on("chooseProgram", (msg) => {
+  socket.on("press", (msg) => {
     if (piSocket) {
       console.log("sending program", msg);
-      io.to(piSocket).emit("chooseProgram", msg);
+      io.to('pi').emit("press", msg);
     }
   });
 
@@ -70,10 +68,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("programList", (msg) => {
-    if (userSocket) {
-      console.log("Recieved program list: " + msg);
-      io.to(userSocket).emit("programList", msg);
-    }
+    if (piSocket && socket.id != piSocket.id) return;
+    if (!userSocket) return;
+
+    console.log("Recieved program list: " + msg);
+    io.to('user').emit("programList", msg);
   });
 
   socket.on("disconnect", () => {

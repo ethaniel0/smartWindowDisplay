@@ -4,9 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test Environment</title>
+    <style>
+      #buttons{
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
   </head>
   <body>
-    <button onClick="connect()">Connect</button>
+    <button id="connect-btn" onClick="connect()">Connect</button>
 
     <div id="buttons"></div>
 
@@ -19,22 +25,21 @@
 
       socket.on("programList", (list) => {
         console.log("program list", list);
-        items = list.split(",");
-        for (let i = 0; i < items.length; i++) {
+        let buttons = document.getElementById("buttons");
+        for (let i = 0; i < list.length; i++) {
           let button = document.createElement("button");
-          button.innerHTML = items[i];
-          button.onclick = () => socket.emit("runProgram", items[i]);
-          document.body.appendChild(button);
+          button.innerHTML = list[i];
+          button.onclick = () => socket.emit("press", list[i]);
+          buttons.appendChild(button);
         }
-        sendData(item);
       });
 
       socket.on("joinCode", (msg) => {
         if (msg == "success") {
-          console.log("joined");
-          document.getElementById("joinCode").style.backgroundColor = "green";
-        } else {
-          document.getElementById("joinCode").style.backgroundColor = "red";
+          let connectBtn = document.getElementById("connect-btn");
+          let code_input = document.getElementById("joinCode");
+          connectBtn.remove();
+          code_input.remove();
         }
       });
 
@@ -53,11 +58,6 @@
           document.getElementById("joinCode").value = "";
           document.getElementById("joinCode").style.backgroundColor = "white";
         }
-      }
-
-      function sendData(data) {
-        console.log("sending", data);
-        socket.emit("message", data);
       }
     </script>
   </body>
