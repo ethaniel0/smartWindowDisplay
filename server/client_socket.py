@@ -15,11 +15,6 @@ while not connected:
         print("Trying again...")
         time.sleep(5)
 
-
-# @sio.event
-# def message(data):
-#     print('I received a message: ', data)
-
 @sio.on('tryConnect')
 def on_message():
     randint1 = random.randint(0, 9)
@@ -41,8 +36,5 @@ def onpiinit(data):
 sio.emit('supersecretpimessage', '3.1415926535897932384626433832769')
 
 while True:
-    # msg = input("Enter message: ")
-    # print("Sending: ", msg)
-    # sio.emit('tryConnect', msg)
     pass
 
