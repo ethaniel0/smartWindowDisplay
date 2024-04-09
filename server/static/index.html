@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test Environment</title>
     <style>
-      #buttons{
+      #buttons {
         display: flex;
         flex-direction: column;
+      }
+      .error {
+        color: red;
       }
     </style>
   </head>
   <body>
     <button id="connect-btn" onClick="connect()">Connect</button>
+    <span id="error-msg" class="error"></span>
 
     <div id="buttons"></div>
 
@@ -23,15 +27,45 @@
         console.log(data);
       });
 
+      socket.on("tryConnect", (msg) => {
+        if (msg == "received") {
+          document.getElementById("error-msg").innerHTML = "";
+          if (!document.getElementById("joinCode")) {
+            let inputElement = document.createElement("input");
+            inputElement.id = "joinCode";
+            inputElement.placeholder = "Join Code";
+            inputElement.onchange = () =>
+              socket.emit("joinCode", inputElement.value);
+            document.body.appendChild(inputElement);
+          } else {
+            document.getElementById("joinCode").value = "";
+            document.getElementById("joinCode").style.backgroundColor = "white";
+          }
+        } else {
+          document.getElementById("error-msg").innerHTML = msg;
+        }
+      });
+
       socket.on("programList", (list) => {
-        console.log("program list", list);
         let buttons = document.getElementById("buttons");
+        buttons.innerHTML = "";
+        console.log(list, typeof list)
+        if (typeof list == 'string'){
+          let backButton = document.createElement("button");
+          backButton.innerHTML = "Back";
+          backButton.onclick = () => socket.emit("press", "Back");
+          buttons.appendChild(backButton);
+          return;
+        }
+        
+        console.log("program list", list);
         for (let i = 0; i < list.length; i++) {
           let button = document.createElement("button");
           button.innerHTML = list[i];
           button.onclick = () => socket.emit("press", list[i]);
           buttons.appendChild(button);
         }
+        
       });
 
       socket.on("joinCode", (msg) => {
@@ -46,18 +80,6 @@
       function connect() {
         console.log("trying to connect over here");
         socket.emit("tryConnect");
-        //if the box is not already there, create it
-        if (!document.getElementById("joinCode")) {
-          let inputElement = document.createElement("input");
-          inputElement.id = "joinCode";
-          inputElement.placeholder = "Join Code";
-          inputElement.onchange = () =>
-            socket.emit("joinCode", inputElement.value);
-          document.body.appendChild(inputElement);
-        } else {
-          document.getElementById("joinCode").value = "";
-          document.getElementById("joinCode").style.backgroundColor = "white";
-        }
       }
     </script>
   </body>

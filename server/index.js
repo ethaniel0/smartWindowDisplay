@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const http = require("http");
+const { join } = require("path");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
@@ -23,7 +24,7 @@ io.on("connection", (socket) => {
   // USER MESSAGES
   socket.on("tryConnect", () => {
     if (userSocket) {
-      return socket.emit("tryConnect", "already connected");
+      return socket.emit("tryConnect", "Another user is already connected");
     }
     console.log("trying to connect");
     socket.emit("tryConnect", "received");
@@ -45,17 +46,19 @@ io.on("connection", (socket) => {
   socket.on("press", (msg) => {
     if (piSocket) {
       console.log("sending program", msg);
-      io.to('pi').emit("press", msg);
+      io.to("pi").emit("press", msg);
     }
   });
 
   // PI MESSAGES
 
   socket.on("supersecretpimessage", (msg) => {
+    if (piSocket) return;
     if (msg == "3.1415926535897932384626433832769") {
       socket.join("pi");
       socket.emit("supersecretpimessage", "success");
       piSocket = socket;
+      console.log("Connected to the pi");
     }
   });
 
@@ -71,7 +74,7 @@ io.on("connection", (socket) => {
     if (!userSocket) return;
 
     console.log("Recieved program list: " + msg);
-    io.to('user').emit("programList", msg);
+    io.to("user").emit("programList", msg);
   });
 
   socket.on("disconnect", () => {
