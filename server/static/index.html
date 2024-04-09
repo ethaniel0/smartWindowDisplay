@@ -19,16 +19,14 @@
 
       socket.on("programList", (list) => {
         console.log("program list", list);
-        
-        let btnDiv = document.getElementById("buttons");
-        btnDiv.innerHTML = "";
-        for (let item of list) {
-          // make button with text "item"
-          let btn = document.createElement("button");
-          btn.innerHTML = item;
-          btn.onclick = () => socket.emit("chooseProgram", item);
-          btnDiv.appendChild(btn);
+        items = list.split(",");
+        for (let i = 0; i < items.length; i++) {
+          let button = document.createElement("button");
+          button.innerHTML = items[i];
+          button.onclick = () => socket.emit("runProgram", items[i]);
+          document.body.appendChild(button);
         }
+        sendData(item);
       });
 
       socket.on("joinCode", (msg) => {
@@ -57,10 +55,9 @@
         }
       }
 
-      function sendData() {
-        var input = document.querySelector("input");
-        console.log("sending", input.value);
-        socket.emit("message", input.value);
+      function sendData(data) {
+        console.log("sending", data);
+        socket.emit("message", data);
       }
     </script>
   </body>
