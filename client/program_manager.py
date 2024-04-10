@@ -71,7 +71,6 @@ class ProgramManager:
     def get_command(self, command):
         print('setting command: ', command)
         self.last_input = command
-        
     
     def update_program(self):
         if not isinstance(self.pages[self.state], programs.App):
