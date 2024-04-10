@@ -162,31 +162,50 @@ class Snake(App):
         self.food = [random.randint(0, 9), random.randint(0, 9)]
         self.direction = "right"
         self.score = 0
+        self.last_time = time.perf_counter()
 
     def restart(self):
         self.state = "start"
         self.snake = [[0, 0]]
-        self.food = [random.randint(0, 9), random.randint(0, 9)]
+        self.food = [random.randint(0, 27), random.randint(0, 20)]
         self.direction = "right"
         self.score = 0
 
     def update(self, input: str):
         if self.state == "start":
-            self.state = "running"
+            self.snake = [[random.randint(0, 27), random.randint(0, 20)]]
+            self.score = 0
+            self.display.update_frame()
+            self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
+            self.display.set_pixel(self.snake[0][0], self.snake[0][1], testdisplay.to_rgb((0, 255, 0)))
+    
+            if input:
+                self.state = "running"
+                self.direction = input
+                print("Snake is moving ", self.direction)
+
         elif self.state == "running":
             self.move()
             if self.snake[0] == self.food:
                 self.score += 1
                 self.food = [random.randint(0, 9), random.randint(0, 9)]
-            elif self.snake[0][0] < 0 or self.snake[0][0] > 9 or self.snake[0][1] < 0 or self.snake[0][1] > 9:
-                print("You lose!")
-                self.state = "start"
+                self.snake.append(self.snake[-1])
+                self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
+            elif self.snake[0][0] < 0 or self.snake[0][0] > 27 or self.snake[0][1] < 0 or self.snake[0][1] > 20:
+                print("You lose!, Score: ", self.score)
+                self.restart()
             elif self.snake[0] in self.snake[1:]:
-                print("You lose!")
-                self.state = "start"
+                print("You lose!, Score: ", self.score)
+                self.restart()
+            self.display.update_frame()
+            if input:
+                self.change_direction(input)
+                print("Snake is moving ", self.direction)
         self.sio.emit('snake', {'snake': self.snake, 'food': self.food, 'score': self.score})
 
     def move(self):
+        if self.last_time + 1 > time.perf_counter(): # 1 second per move
+            return
         new_head = self.snake[0].copy()
         if self.direction == "up":
             new_head[1] -= 1
@@ -197,7 +216,10 @@ class Snake(App):
         elif self.direction == "right":
             new_head[0] += 1
         self.snake.insert(0, new_head)
+        self.display.set_pixel(new_head[0], new_head[1], testdisplay.to_rgb((0, 255, 0)))
+        self.display.set_pixel(self.snake[-1][0], self.snake[-1][1], testdisplay.to_rgb((0, 0, 0)))
         self.snake.pop()
+        self.last_time = time.perf_counter()
 
     def change_direction(self, direction):
         if direction == "up" and self.direction != "down":
