@@ -36,3 +36,15 @@ class TestDisplay(tk.Tk):
     def update_frame(self):
         self.update_idletasks()
         self.update()
+
+if __name__ == "__main__":
+    display = TestDisplay()
+    display.set_all_pixels((255, 0, 0))
+    display.update_frame()
+    display.set_all_pixels((0, 255, 0))
+    display.update_frame()
+    display.set_all_pixels((0, 0, 255))
+    display.update_frame()
+    display.set_all_pixels((0, 0, 0))
+    display.update_frame()
+    display.mainloop()

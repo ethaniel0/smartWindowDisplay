@@ -12,8 +12,8 @@ class ProgramManager:
             "main": ["Duke Game", "Weather", "Games"],
             "Games": ["Simon", "Snake"],
             
-            "Simon": programs.Simon(sio),
-            "Snake": programs.Snake(sio),
+            "Simon": programs.Simon(sio, self.display),
+            "Snake": programs.Snake(sio, self.display),
         }
         
         self.last_input = ""
@@ -73,7 +73,7 @@ class ProgramManager:
     
     def update_program(self):
         if isinstance(self.pages[self.state], programs.App):
-            self.pages[self.state].update(self.last_input)
+            self.pages[self.state].update(self.last_input if self.last_input else None)
             self.last_input = ""
     
 

@@ -3,6 +3,7 @@ from abc import abstractmethod
 import random
 import socketio
 import testdisplay
+import time
 
 class App(abc.ABC):
     def __init__(self, name: str, sio: socketio.Client, display: testdisplay.TestDisplay):
@@ -37,6 +38,9 @@ class Simon(App):
         self.sequence_length = 1
         self.sequence_index = 0
         self.user_sequence_index = 0
+        
+        self.last_time = time.perf_counter()
+        self.start_anim_frame = 0
 
     def restart(self):
         self.state = "start"
@@ -48,29 +52,44 @@ class Simon(App):
 
     def update(self, input: str):
         if self.state == "start":
-            self.sequence = []
-            self.user_sequence = []
-            self.sequence_length = 1
-            self.sequence_index = 0
-            self.user_sequence_index = 0
-            self.state = "running"
-            self.generate_sequence()
-            print("Simon says: ", self.sequence)
+            
+            now = time.perf_counter()
+            if (now - self.last_time) > 1:
+                color = (0, 0, 0) if self.start_anim_frame == 1 else (255, 255, 255)
+                for i in range(27):
+                    self.display.set_pixel(i, 0, testdisplay.to_rgb(color))
+                self.last_time = now
+            
+            if input:
+                self.sequence = []
+                self.user_sequence = []
+                self.sequence_length = 1
+                self.sequence_index = 0
+                self.user_sequence_index = 0
+                self.state = "running"
+                self.generate_sequence()
+                print("Simon says: ", self.sequence)
+                
         elif self.state == "running":
+            if not input or input not in self.options:
+                return
+            num_input = ['Red', 'Blue', 'Green', 'Yellow'].index(input)
+            
             if self.user_sequence_index == self.sequence_length:
                 self.user_sequence_index = 0
                 self.sequence_index = 0
                 self.sequence_length += 1
                 self.generate_sequence()
                 print("Simon says: ", self.sequence)
-            elif self.user_sequence[self.user_sequence_index] != self.sequence[self.sequence_index]:
+            elif num_input != self.sequence[self.sequence_index]:
                 print("You lose!")
                 self.state = "start"
             else:
                 self.user_sequence_index += 1
                 self.sequence_index += 1
-        self.sio.emit('simon', {'sequence': self.sequence, 'user_sequence': self.user_sequence, 'sequence_length': self.sequence_length})
-
+            self.sio.emit('simon', {'sequence': self.sequence, 'user_sequence': self.user_sequence, 'sequence_length': self.sequence_length})
+        self.display.update_frame()
+    
     def generate_sequence(self):
         for i in range(self.sequence_length):
             self.sequence.append(self.options[random.randint(0, 3)])
