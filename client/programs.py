@@ -2,18 +2,20 @@ import abc
 from abc import abstractmethod
 import random
 import socketio
+import testdisplay
 
 class App(abc.ABC):
-    def __init__(self, name: str, sio: socketio.Client):
+    def __init__(self, name: str, sio: socketio.Client, display: testdisplay.TestDisplay):
         self.name: str = name
         self.sio: socketio.Client = sio
+        self.display: testdisplay.TestDisplay = display
     
     @abstractmethod
     def restart():
         pass
     
     @abstractmethod
-    def update():
+    def update(input: str):
         pass
 
     def get_options(self):
@@ -26,8 +28,8 @@ class App(abc.ABC):
         return self.name
 
 class Simon(App):
-    def __init__(self, sio: socketio.Client):
-        super().__init__("Simon", sio)
+    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+        super().__init__("Simon", sio, display)
         self.state = "start"
         self.options = ['Red', 'Blue', 'Green', 'Yellow']
         self.sequence = []
@@ -44,7 +46,7 @@ class Simon(App):
         self.sequence_index = 0
         self.user_sequence_index = 0
 
-    def update(self):
+    def update(self, input: str):
         if self.state == "start":
             self.sequence = []
             self.user_sequence = []
@@ -74,8 +76,8 @@ class Simon(App):
             self.sequence.append(self.options[random.randint(0, 3)])
             
 class Snake(App):
-    def __init__(self, sio: socketio.Client):
-        super().__init__("Snake", sio)
+    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+        super().__init__("Snake", sio, display)
         self.state = "start"
         self.options = ['up', 'down', 'left', 'right']
         self.snake = [[0, 0]]
@@ -90,7 +92,7 @@ class Snake(App):
         self.direction = "right"
         self.score = 0
 
-    def update(self):
+    def update(self, input: str):
         if self.state == "start":
             self.state = "running"
         elif self.state == "running":

@@ -1,12 +1,13 @@
 import socketio
 import programs
-
-
+import testdisplay
 
 class ProgramManager:
     def __init__(self, sio: socketio.Client):
         self.state = "main"
         self.sio = sio
+        self.display = testdisplay.TestDisplay()
+        
         self.pages = {
             "main": ["Duke Game", "Weather", "Games"],
             "Games": ["Simon", "Snake"],
@@ -14,6 +15,9 @@ class ProgramManager:
             "Simon": programs.Simon(sio),
             "Snake": programs.Snake(sio),
         }
+        
+        self.last_input = ""
+        
     
     def go_one_page_up(self):
         if self.state == "main":
@@ -63,10 +67,14 @@ class ProgramManager:
             name_list.append('Back')
         
         return name_list
+
+    def get_command(self, command):
+        self.last_input = command
     
     def update_program(self):
         if isinstance(self.pages[self.state], programs.App):
-            self.pages[self.state].update()
+            self.pages[self.state].update(self.last_input)
+            self.last_input = ""
     
 
     
