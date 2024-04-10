@@ -6,8 +6,8 @@ import time
 from threading import Semaphore
 
 #For connecting to the server:
-# link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
-link = 'http://localhost:3000/'
+link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
+# link = 'http://localhost:3000/'
 sio = socketio.Client()
 
 manager = program_manager.ProgramManager(sio)
