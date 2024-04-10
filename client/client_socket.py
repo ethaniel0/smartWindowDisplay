@@ -51,12 +51,10 @@ def press_item(data):
 def disconnect():
     print('Disconnected from server')
 
-last_time = time.time()
-update_frequency = 0.1
-
-last_time = time.perf_counter()
-
 def main():
+    last_time = time.time()
+    update_frequency = 0.1
+    last_time = time.perf_counter()
     while True:
         if not sio.connected:
             try: 

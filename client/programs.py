@@ -16,6 +16,9 @@ class App(abc.ABC):
     def update():
         pass
 
+    def get_options(self):
+        return self.options
+
     def __str__(self):
         return self.name
 
@@ -74,6 +77,7 @@ class Snake(App):
     def __init__(self, sio: socketio.Client):
         super().__init__("Snake", sio)
         self.state = "start"
+        self.options = ['up', 'down', 'left', 'right']
         self.snake = [[0, 0]]
         self.food = [random.randint(0, 9), random.randint(0, 9)]
         self.direction = "right"
