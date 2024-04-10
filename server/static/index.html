@@ -55,6 +55,9 @@
           backButton.innerHTML = "Back";
           backButton.onclick = () => socket.emit("press", "Back");
           buttons.appendChild(backButton);
+          if (list == "Simon") {
+            simonButtons();
+          }
           return;
         }
 
@@ -84,6 +87,41 @@
       function clearButtons() {
         let buttons = document.getElementById("buttons");
         buttons.innerHTML = "";
+      }
+
+      function simonButtons() {
+        let colors = ["red", "green", "blue", "yellow"];
+        for (let i = 0; i < colors.length; i++) {
+          let button = document.createElement("button");
+          button.innerHTML = colors[i];
+          button.style.backgroundColor = colors[i];
+          button.onclick = () => socket.emit("gameCommand", colors[i]);
+          buttons.appendChild(button);
+        }
+      }
+
+      function gamepad() {
+        let buttons = document.getElementById("buttons");
+        clearButtons();
+        let up = document.createElement("button");
+        up.innerHTML = "Up";
+        up.onclick = () => socket.emit("gameCommand", "up");
+        buttons.appendChild(up);
+
+        let down = document.createElement("button");
+        down.innerHTML = "Down";
+        down.onclick = () => socket.emit("gameCommand", "down");
+        buttons.appendChild(down);
+
+        let left = document.createElement("button");
+        left.innerHTML = "Left";
+        left.onclick = () => socket.emit("gameCommand", "left");
+        buttons.appendChild(left);
+
+        let right = document.createElement("button");
+        right.innerHTML = "Right";
+        right.onclick = () => socket.emit("gameCommand", "right");
+        buttons.appendChild(right);
       }
     </script>
   </body>
