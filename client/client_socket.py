@@ -48,7 +48,8 @@ def press_item(data):
 
 @sio.on('gameCommand')
 def game_command(data):
-    print('Game Command: ', data)
+    print('got command', data)
+    manager.get_command(data)
             
 #on disconnect
 @sio.event
@@ -57,7 +58,7 @@ def disconnect():
 
 def main():
     last_time = time.time()
-    update_frequency = 0.1
+    update_frequency = 1/30
     last_time = time.perf_counter()
     while True:
         if not sio.connected:
