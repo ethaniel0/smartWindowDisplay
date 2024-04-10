@@ -187,10 +187,7 @@ class Snake(App):
             if self.snake[0] == self.food:
                 self.score += 1
                 self.food = [random.randint(0, 27), random.randint(0, 20)]
-                while self.food in self.snake:
-                    self.food = [random.randint(0, 27), random.randint(0, 20)]
                 self.eaten = True
-                self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
             elif self.snake[0][0] < 0 or self.snake[0][0] > 27 or self.snake[0][1] < 0 or self.snake[0][1] > 20:
                 print("You lose!, Score: ", self.score)
                 self.display.clear()
@@ -200,6 +197,7 @@ class Snake(App):
                 self.display.clear()
                 self.restart()
             self.display.update_frame()
+            self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
             if input:
                 self.change_direction(input)
                 print("Snake is moving ", self.direction)
