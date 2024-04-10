@@ -32,12 +32,15 @@ def onpiinit(data):
 def on_join(data):
     print('Joined: ', data)
     if data == 'success':
+        managerSemaphore.acquire()
         options = manager.get_page(manager.state)
+        managerSemaphore.release()
         sio.emit('programList', options)
         
 @sio.on('press')
 def press_item(data):
     print('Pressed: ', data)
+    managerSemaphore.acquire()
     if data == 'Back':
         options = manager.go_one_page_up()
         sio.emit('programList', options)
@@ -46,6 +49,7 @@ def press_item(data):
         if options == '':
             sio.emit('programList', ['Back'])
         sio.emit('programList', options)
+    managerSemaphore.release()
 
 @sio.on('gameCommand')
 def game_command(data):

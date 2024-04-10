@@ -101,14 +101,15 @@ class Simon(App):
         self.show_rect(5, 10, 5, 5, (0, 80, 0))
         self.show_rect(10, 10, 5, 5, (80, 80, 0))
         
-        if seq_num == 0:
-            self.show_rect(5, 5, 5, 5, color)
-        elif seq_num == 1:
-            self.show_rect(10, 5, 5, 5, color)
-        elif seq_num == 2:
-            self.show_rect(5, 10, 5, 5, color)
-        elif seq_num == 3:
-            self.show_rect(10, 10, 5, 5, color)
+        if now - self.last_time < 0.8:
+            if seq_num == 0:
+                self.show_rect(5, 5, 5, 5, color)
+            elif seq_num == 1:
+                self.show_rect(10, 5, 5, 5, color)
+            elif seq_num == 2:
+                self.show_rect(5, 10, 5, 5, color)
+            elif seq_num == 3:
+                self.show_rect(10, 10, 5, 5, color)
         
         now = time.perf_counter()
 
