@@ -1,10 +1,5 @@
-# get the current weather
-
-
-
 import requests
 import json
-import os
 
 token_file = 'token.txt'
 
