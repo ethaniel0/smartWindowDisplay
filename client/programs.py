@@ -168,6 +168,7 @@ class Snake(App):
         self.state = "start"
         self.snake = [[random.randint(0, 27), random.randint(0, 20)]]
         self.food = [random.randint(0, 27), random.randint(0, 20)]
+        self.display.clear()
         self.direction = "right"
         self.score = 0
 
@@ -190,11 +191,9 @@ class Snake(App):
                 self.eaten = True
             elif self.snake[0][0] < 0 or self.snake[0][0] > 27 or self.snake[0][1] < 0 or self.snake[0][1] > 20:
                 print("You lose!, Score: ", self.score)
-                self.display.clear()
                 self.restart()
             elif self.snake[0] in self.snake[1:]:
                 print("You lose!, Score: ", self.score)
-                self.display.clear()
                 self.restart()
             self.display.update_frame()
             self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
