@@ -1,11 +1,6 @@
 import json
 import os
 
-# we have a data folder with subfolders
-# each subfolder contains 3 text files: logos.txt, opponents.txt, scores.txt
-# we want to convert the data into a json format:
-# we want to do it by game, so have a dictionary with the game name as the key
-
 
 def get_data():
     data = {}
@@ -21,7 +16,6 @@ def get_data():
             'opponents': opponents,
             'scores': scores
         }
-        
     return data
 
 
@@ -37,5 +31,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
