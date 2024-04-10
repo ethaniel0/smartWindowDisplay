@@ -17,6 +17,7 @@ class ProgramManager:
         }
         
         self.last_input = ""
+        self.startup = False
         
     
     def go_one_page_up(self):
@@ -54,7 +55,7 @@ class ProgramManager:
         self.state = page
         if isinstance(self.pages[page], programs.App):
             app: programs.App = self.pages[page]
-            app.restart()
+            self.startup = True
             return page
         
         name_list = []
@@ -75,6 +76,9 @@ class ProgramManager:
     def update_program(self):
         if not isinstance(self.pages[self.state], programs.App):
             return
+        if self.startup:
+            self.pages[self.state].restart()
+            self.startup = False
         self.pages[self.state].update(self.last_input)
         self.last_input = ""
     

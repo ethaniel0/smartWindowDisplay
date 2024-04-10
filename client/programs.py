@@ -151,8 +151,7 @@ class Simon(App):
 
     def add_to_sequence(self):
         self.sequence.append(random.randint(0, 3))
-        
-            
+              
 class Snake(App):
     def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
         super().__init__("Snake", sio, display)
@@ -200,7 +199,6 @@ class Snake(App):
             if input:
                 self.change_direction(input)
                 print("Snake is moving ", self.direction)
-        self.sio.emit('snake', {'snake': self.snake, 'food': self.food, 'score': self.score})
 
     def move(self):
         if self.last_time + 1 > time.perf_counter(): # 1 second per move

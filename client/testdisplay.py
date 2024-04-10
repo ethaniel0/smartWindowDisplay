@@ -16,7 +16,7 @@ class TestDisplay(tk.Tk):
                 self.set_pixel(i, j, to_rgb((0, 0, 0)))
     
     def set_pixel(self, x, y, color):
-        self.canvas.create_rectangle(x*10, y*10, x*10+10, y*10+10, fill=color)
+        self.canvas.create_rectangle(x*10, y*10, x*10+10, y*10+10, fill=color, outline="")
         self.canvas.pack()
     
     def set_pixels(self, colors):
@@ -26,9 +26,7 @@ class TestDisplay(tk.Tk):
             self.set_pixel(x, y, to_rgb(color))
     
     def set_all_pixels(self, color):
-        for i in range(27):
-            for j in range(20):
-                self.set_pixel(i, j, to_rgb(color))
+        self.canvas.create_rectangle(0, 0, 270, 200, fill=to_rgb(color))
     
     def clear(self):
         self.set_all_pixels((0, 0, 0))
@@ -47,4 +45,5 @@ if __name__ == "__main__":
     display.update_frame()
     display.set_all_pixels((0, 0, 0))
     display.update_frame()
+    display.set_pixel(0, 0, to_rgb((255, 255, 255)))
     display.mainloop()
