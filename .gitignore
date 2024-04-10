@@ -1,3 +1,15 @@
 /server/node_modules
 .venv
 /client/__pycache__
+
+
+**/data
+*/data.json
+
+*/weather.json
+
+*/token.txt
+
+*/.DS_Store
+
+.DS_Store

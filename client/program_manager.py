@@ -69,12 +69,15 @@ class ProgramManager:
         return name_list
 
     def get_command(self, command):
+        print('setting command: ', command)
         self.last_input = command
+        
     
     def update_program(self):
-        if isinstance(self.pages[self.state], programs.App):
-            self.pages[self.state].update(self.last_input if self.last_input else None)
-            self.last_input = ""
+        if not isinstance(self.pages[self.state], programs.App):
+            return
+        self.pages[self.state].update(self.last_input)
+        self.last_input = ""
     
 
     

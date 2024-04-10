@@ -3,16 +3,17 @@ import time
 import random
 import program_manager
 import time
+from threading import Semaphore
 
 #For connecting to the server:
-link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
-# link = 'http://localhost:3000/'
+# link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
+link = 'http://localhost:3000/'
 sio = socketio.Client()
 
 manager = program_manager.ProgramManager(sio)
+managerSemaphore = Semaphore()
 
 #Pi Messages:
-
 @sio.on('tryConnect')
 def on_message():
     randint1 = random.randint(0, 9)
@@ -48,8 +49,9 @@ def press_item(data):
 
 @sio.on('gameCommand')
 def game_command(data):
-    print('got command', data)
+    managerSemaphore.acquire()
     manager.get_command(data)
+    managerSemaphore.release()
             
 #on disconnect
 @sio.event
@@ -57,6 +59,7 @@ def disconnect():
     print('Disconnected from server')
 
 def main():
+    global last_command
     last_time = time.time()
     update_frequency = 1/30
     last_time = time.perf_counter()
@@ -72,7 +75,9 @@ def main():
         
         if (time.perf_counter() - last_time) > update_frequency and sio.connected:
             last_time = time.perf_counter()
+            managerSemaphore.acquire()
             manager.update_program()
+            managerSemaphore.release()
 
 if __name__ == '__main__':
     main()

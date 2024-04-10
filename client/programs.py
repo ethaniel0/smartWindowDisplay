@@ -35,65 +35,122 @@ class Simon(App):
         self.options = ['Red', 'Blue', 'Green', 'Yellow']
         self.sequence = []
         self.user_sequence = []
-        self.sequence_length = 1
         self.sequence_index = 0
         self.user_sequence_index = 0
         
         self.last_time = time.perf_counter()
         self.start_anim_frame = 0
+        
+        self.started_show_sequence = False
 
     def restart(self):
         self.state = "start"
         self.sequence = []
         self.user_sequence = []
-        self.sequence_length = 1
         self.sequence_index = 0
         self.user_sequence_index = 0
+        
+    def start_state(self, input: str):
+        if input:
+            self.sequence = []
+            self.user_sequence = []
+            self.sequence_index = 0
+            self.user_sequence_index = 0
+            self.state = "showing"
+            self.add_to_sequence()
+            print("Simon says: ", self.sequence)
+            self.display.clear()
+            return
+        
+        now = time.perf_counter()
+        if (now - self.last_time) > 1:
+            color = (0, 0, 0) if self.start_anim_frame == 1 else (255, 255, 255)
+            for i in range(27):
+                self.display.set_pixel(i, 0, testdisplay.to_rgb(color))
+            self.last_time = now
+            self.start_anim_frame = 1 - self.start_anim_frame
+            
+    def show_rect(self, x, y, w, h, color):
+        for i in range(x, x + w):
+            for j in range(y, y + h):
+                self.display.set_pixel(i, j, testdisplay.to_rgb(color))
+        
+    def show_sequence(self):
+        if not self.started_show_sequence:
+            self.last_time = time.perf_counter()
+            self.started_show_sequence = True
+        now = time.perf_counter()
+        if now - self.last_time > 1:
+            self.last_time = now
+            self.sequence_index += 1
+            
+        if self.sequence_index >= len(self.sequence):
+            self.state = "running"
+            self.sequence_index = 0
+            self.user_sequence_index = 0
+            self.started_show_sequence = False
+            self.display.clear()
+            return
+        
+        color_map = [(255, 0, 0), (0, 0, 255), (0, 255, 0), (255, 255, 0)]
+        seq_num = self.sequence[self.sequence_index]
+        color = color_map[seq_num]
+        
+        self.show_rect(5, 5, 5, 5, (80, 0, 0))
+        self.show_rect(10, 5, 5, 5, (0, 0, 80))
+        self.show_rect(5, 10, 5, 5, (0, 80, 0))
+        self.show_rect(10, 10, 5, 5, (80, 80, 0))
+        
+        if seq_num == 0:
+            self.show_rect(5, 5, 5, 5, color)
+        elif seq_num == 1:
+            self.show_rect(10, 5, 5, 5, color)
+        elif seq_num == 2:
+            self.show_rect(5, 10, 5, 5, color)
+        elif seq_num == 3:
+            self.show_rect(10, 10, 5, 5, color)
+        
+        now = time.perf_counter()
+
+    def get_input(self, input: str):
+        if not input or input not in self.options:
+            return
+        
+        num_input = ['Red', 'Blue', 'Green', 'Yellow'].index(input)
+        
+        print("User input: ", num_input)
+        
+        if num_input != self.sequence[self.sequence_index]:
+            print("You lose!")
+            self.state = "start"
+            return
+        else:
+            print('Correct!')
+            self.sequence_index += 1
+            self.user_sequence_index += 1
+        
+        print('going onto next')
+            
+        if self.user_sequence_index == len(self.sequence):
+            print("You win!")
+            self.sequence_index = 0
+            self.user_sequence_index = 0
+            self.add_to_sequence()
+            self.state = "showing"
+            print("Simon says: ", self.sequence)
 
     def update(self, input: str):
         if self.state == "start":
-            
-            now = time.perf_counter()
-            if (now - self.last_time) > 1:
-                color = (0, 0, 0) if self.start_anim_frame == 1 else (255, 255, 255)
-                for i in range(27):
-                    self.display.set_pixel(i, 0, testdisplay.to_rgb(color))
-                self.last_time = now
-                self.start_anim_frame = 1 - self.start_anim_frame
-            
-            if input:
-                self.sequence = []
-                self.user_sequence = []
-                self.sequence_length = 1
-                self.sequence_index = 0
-                self.user_sequence_index = 0
-                self.state = "running"
-                self.generate_sequence()
-                print("Simon says: ", self.sequence)
-                
+            self.start_state(input)
+        elif self.state == "showing":
+            self.show_sequence()
         elif self.state == "running":
-            if not input or input not in self.options:
-                return
-            num_input = ['Red', 'Blue', 'Green', 'Yellow'].index(input)
-            
-            if self.user_sequence_index == self.sequence_length:
-                self.user_sequence_index = 0
-                self.sequence_index = 0
-                self.sequence_length += 1
-                self.generate_sequence()
-                print("Simon says: ", self.sequence)
-            elif num_input != self.sequence[self.sequence_index]:
-                print("You lose!")
-                self.state = "start"
-            else:
-                self.user_sequence_index += 1
-                self.sequence_index += 1
-            self.sio.emit('simon', {'sequence': self.sequence, 'user_sequence': self.user_sequence, 'sequence_length': self.sequence_length})
+            self.get_input(input)
         self.display.update_frame()
-    
-    def generate_sequence(self):
-        for i in range(self.sequence_length):
-            self.sequence.append(self.options[random.randint(0, 3)])
+
+    def add_to_sequence(self):
+        self.sequence.append(random.randint(0, 3))
+        
             
 class Snake(App):
     def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
