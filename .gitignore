@@ -6,4 +6,10 @@
 **/data
 */data.json
 
+*/weather.json
+
+*/token.txt
+
+*/.DS_Store
+
 .DS_Store
