@@ -162,13 +162,13 @@ class Snake(App):
         self.food = [random.randint(0, 9), random.randint(0, 9)]
         self.direction = "right"
         self.score = 0
+        self.eaten = False
         self.last_time = time.perf_counter()
 
     def restart(self):
         self.state = "start"
         self.snake = [[random.randint(0, 27), random.randint(0, 20)]]
         self.food = [random.randint(0, 27), random.randint(0, 20)]
-        self.display.clear()
         self.direction = "right"
         self.score = 0
 
@@ -188,13 +188,15 @@ class Snake(App):
             if self.snake[0] == self.food:
                 self.score += 1
                 self.food = [random.randint(0, 9), random.randint(0, 9)]
-                self.snake.append(self.snake[-1])
+                self.eaten = True
                 self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
             elif self.snake[0][0] < 0 or self.snake[0][0] > 27 or self.snake[0][1] < 0 or self.snake[0][1] > 20:
                 print("You lose!, Score: ", self.score)
+                self.display.clear()
                 self.restart()
             elif self.snake[0] in self.snake[1:]:
                 print("You lose!, Score: ", self.score)
+                self.display.clear()
                 self.restart()
             self.display.update_frame()
             if input:
@@ -216,8 +218,11 @@ class Snake(App):
             new_head[0] += 1
         self.snake.insert(0, new_head)
         self.display.set_pixel(new_head[0], new_head[1], testdisplay.to_rgb((0, 255, 0)))
-        self.display.set_pixel(self.snake[-1][0], self.snake[-1][1], testdisplay.to_rgb((0, 0, 0)))
-        self.snake.pop()
+        if not self.eaten:
+            self.display.set_pixel(self.snake[-1][0], self.snake[-1][1], testdisplay.to_rgb((0, 0, 0)))
+            self.snake.pop()
+        else:
+            self.eaten = False
         self.last_time = time.perf_counter()
 
     def change_direction(self, direction):
