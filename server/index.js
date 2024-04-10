@@ -50,6 +50,13 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("gameCommand", (msg) => {
+    if (piSocket) {
+      console.log("sending command", msg);
+      io.to("pi").emit("gameCommand", msg);
+    }
+  });
+
   // PI MESSAGES
 
   socket.on("supersecretpimessage", (msg) => {

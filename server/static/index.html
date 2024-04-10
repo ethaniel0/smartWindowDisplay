@@ -48,16 +48,16 @@
 
       socket.on("programList", (list) => {
         let buttons = document.getElementById("buttons");
-        buttons.innerHTML = "";
-        console.log(list, typeof list)
-        if (typeof list == 'string'){
+        clearButtons();
+        console.log(list, typeof list);
+        if (typeof list == "string") {
           let backButton = document.createElement("button");
           backButton.innerHTML = "Back";
           backButton.onclick = () => socket.emit("press", "Back");
           buttons.appendChild(backButton);
           return;
         }
-        
+
         console.log("program list", list);
         for (let i = 0; i < list.length; i++) {
           let button = document.createElement("button");
@@ -65,7 +65,6 @@
           button.onclick = () => socket.emit("press", list[i]);
           buttons.appendChild(button);
         }
-        
       });
 
       socket.on("joinCode", (msg) => {
@@ -80,6 +79,11 @@
       function connect() {
         console.log("trying to connect over here");
         socket.emit("tryConnect");
+      }
+
+      function clearButtons() {
+        let buttons = document.getElementById("buttons");
+        buttons.innerHTML = "";
       }
     </script>
   </body>
