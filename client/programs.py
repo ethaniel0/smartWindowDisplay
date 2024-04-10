@@ -59,6 +59,7 @@ class Simon(App):
                 for i in range(27):
                     self.display.set_pixel(i, 0, testdisplay.to_rgb(color))
                 self.last_time = now
+                self.start_anim_frame = 1 - self.start_anim_frame
             
             if input:
                 self.sequence = []

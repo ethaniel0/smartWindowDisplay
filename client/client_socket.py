@@ -45,6 +45,10 @@ def press_item(data):
         if options == '':
             sio.emit('programList', ['Back'])
         sio.emit('programList', options)
+
+@sio.on('gameCommand')
+def game_command(data):
+    print('Game Command: ', data)
             
 #on disconnect
 @sio.event
@@ -65,7 +69,7 @@ def main():
                 print("Trying again...")
                 time.sleep(2)
         
-        if (time.perf_counter() - last_time) > update_frequency:
+        if (time.perf_counter() - last_time) > update_frequency and sio.connected:
             last_time = time.perf_counter()
             manager.update_program()
 
