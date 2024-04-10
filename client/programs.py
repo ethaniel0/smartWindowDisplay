@@ -165,15 +165,14 @@ class Snake(App):
 
     def restart(self):
         self.state = "start"
-        self.snake = [[0, 0]]
+        self.snake = [[random.randint(0, 27), random.randint(0, 20)]]
         self.food = [random.randint(0, 27), random.randint(0, 20)]
+        self.display.clear()
         self.direction = "right"
         self.score = 0
 
     def update(self, input: str):
         if self.state == "start":
-            self.snake = [[random.randint(0, 27), random.randint(0, 20)]]
-            self.score = 0
             self.display.update_frame()
             self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
             self.display.set_pixel(self.snake[0][0], self.snake[0][1], testdisplay.to_rgb((0, 255, 0)))
