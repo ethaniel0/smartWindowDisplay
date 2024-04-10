@@ -203,7 +203,7 @@ class Snake(App):
                 print("Snake is moving ", self.direction)
 
     def move(self):
-        if self.last_time + 1 > time.perf_counter(): # 1 second per move
+        if self.last_time + 0.25 > time.perf_counter(): # 1 second per move
             return
         new_head = self.snake[0].copy()
         if self.direction == "up":
