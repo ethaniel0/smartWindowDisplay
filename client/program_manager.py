@@ -10,10 +10,11 @@ class ProgramManager:
         
         self.pages = {
             "main": ["Duke Game", "Weather", "Games"],
-            "Games": ["Simon", "Snake"],
+            "Games": ["Simon", "Snake", "Maze"],
             
             "Simon": programs.Simon(sio, self.display),
             "Snake": programs.Snake(sio, self.display),
+            "Maze": programs.Maze(sio, self.display),
         }
         
         self.last_input = ""

@@ -166,8 +166,8 @@ class Snake(App):
 
     def restart(self):
         self.state = "start"
-        self.snake = [[random.randint(0, 27), random.randint(0, 20)]]
-        self.food = [random.randint(0, 27), random.randint(0, 20)]
+        self.snake = [[random.randint(0, 26), random.randint(0, 19)]]
+        self.food = [random.randint(0, 26), random.randint(0, 19)]
         self.display.clear()
         self.direction = "right"
         self.score = 0
@@ -187,9 +187,9 @@ class Snake(App):
             self.move()
             if self.snake[0] == self.food:
                 self.score += 1
-                self.food = [random.randint(0, 27), random.randint(0, 20)]
+                self.food = [random.randint(0, 26), random.randint(0, 19)]
                 self.eaten = True
-            elif self.snake[0][0] < 0 or self.snake[0][0] > 27 or self.snake[0][1] < 0 or self.snake[0][1] > 20:
+            elif self.snake[0][0] < 0 or self.snake[0][0] > 26 or self.snake[0][1] < 0 or self.snake[0][1] > 19:
                 print("You lose!, Score: ", self.score)
                 self.restart()
             elif self.snake[0] in self.snake[1:]:
@@ -230,4 +230,79 @@ class Snake(App):
         elif direction == "left" and self.direction != "right":
             self.direction = "left"
         elif direction == "right" and self.direction != "left":
+            self.direction = "right"
+
+class Maze(App):
+    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+        super().__init__("Maze", sio, display)
+        self.state = "start"
+        self.options = ['up', 'down', 'left', 'right']
+        self.player = [0, 0]
+        self.goal = [26, 19]
+        self.last_time = time.perf_counter()
+        self.maze = [[0 for i in range(27)] for j in range(20)]
+
+    def generate_maze(self):
+        #randomly generate a maze
+        for i in range(27):
+            for j in range(20):
+                if random.random() < 0.3:
+                    self.maze[j][i] = 1
+    
+    def display_maze(self):
+        for i in range(27):
+            for j in range(20):
+                if self.maze[j][i] == 1:
+                    self.display.set_pixel(i, j, testdisplay.to_rgb((0, 0, 0)))
+                else:
+                    self.display.set_pixel(i, j, testdisplay.to_rgb((255, 255, 255)))
+
+    def restart(self):
+        self.state = "start"
+        self.player = [0, 0]
+        self.goal = [26, 19]
+        # self.display.clear()
+        # self.generate_maze()
+        # self.display_maze()
+
+    def update(self, input: str):
+        if self.state == "start":
+            self.display.update_frame()
+            self.display.set_pixel(self.goal[0], self.goal[1], testdisplay.to_rgb((255, 0, 0)))
+            self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
+            if input:
+                self.state = "running"
+                self.direction = input
+                print("Maze is moving ", self.direction)
+
+        elif self.state == "running":
+            if input:
+                self.change_direction(input)
+                print("Maze is moving ", self.direction)
+                self.move()
+                self.display.update_frame()
+            if self.player == self.goal:
+                print("You win!")
+                self.restart()
+
+    def move(self):
+        if self.direction == "up":
+            self.player[1] -= 1
+        elif self.direction == "down":
+            self.player[1] += 1
+        elif self.direction == "left":
+            self.player[0] -= 1
+        elif self.direction == "right":
+            self.player[0] += 1
+        print ("player now at: ", self.player)
+        self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
+        
+    def change_direction(self, direction):
+        if direction == "up":
+            self.direction = "up"
+        elif direction == "down":
+            self.direction = "down"
+        elif direction == "left":
+            self.direction = "left"
+        elif direction == "right":
             self.direction = "right"
