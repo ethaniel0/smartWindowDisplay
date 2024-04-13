@@ -306,3 +306,36 @@ class Maze(App):
             self.direction = "left"
         elif direction == "right":
             self.direction = "right"
+
+class Jump(App):
+    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+        super().__init__("Jump", sio, display)
+        self.state = "start"
+        self.options = ['up', 'down']
+        self.player = [0, 0]
+        self.course = [[0 for i in range(27)] for j in range(20)]
+        self.set_course()
+        self.last_time = time.perf_counter()
+        self.obstacles = []
+
+    def set_course(self):
+        for i in range(27):
+            for j in range(20):
+                if j < 10:
+                    self.course[j][i] = 0
+                else:
+                    self.course[j][i] = 1
+
+    def generate_obstacles(self):
+        #randomly generate obstacles
+        if random.random() < 0.3:
+            if random.random() < 0.5:
+                self.obstacles.append([26, 10]) #low obstacle
+            else:
+                self.obstacles.append([26, 8]) #high obstacle 
+        
+    def move(self):
+        if self.direction == "up":
+            self.player[1] -= 1
+        elif self.direction == "down":
+            self.player[1] += 1  
