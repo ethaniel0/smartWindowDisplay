@@ -261,7 +261,7 @@ class Maze(App):
         self.state = "start"
         self.player = [0, 0]
         self.goal = [26, 19]
-        # self.display.clear()
+        self.display.clear()
         # self.generate_maze()
         # self.display_maze()
 

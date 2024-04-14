@@ -20,15 +20,23 @@ io.on("connection", (socket) => {
     console.log(msg);
     io.emit("message", msg + " we love Duke");
   });
+  if (!piSocket) {
+    socket.emit("message", "PI IS GONE");
+    socket.emit("piDisconnected");
+  }
 
   // USER MESSAGES
   socket.on("tryConnect", () => {
-    if (userSocket) {
+    if (userSocket && socket.id != userSocket.id) {
       return socket.emit("tryConnect", "Another user is already connected");
     }
     console.log("trying to connect");
-    socket.emit("tryConnect", "received");
-    io.to("pi").emit("tryConnect");
+    if (piSocket) {
+      socket.emit("tryConnect", "received");
+      io.to("pi").emit("tryConnect");
+    } else {
+      socket.emit("tryConnect", "PI IS GONE");
+    }
   });
 
   socket.on("joinCode", (msg) => {
@@ -64,6 +72,7 @@ io.on("connection", (socket) => {
     if (msg == "3.1415926535897932384626433832769") {
       socket.join("pi");
       socket.emit("supersecretpimessage", "success");
+      io.emit("piJoined");
       piSocket = socket;
       console.log("Connected to the pi");
     }
@@ -87,6 +96,9 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     if (piSocket && socket.id == piSocket.id) {
       piSocket = null;
+      console.log("Disconnected from the pi");
+      io.emit("piDisconnected");
+      userSocket = null; //must reenter code to become user
     } else if (userSocket && socket.id == userSocket.id) {
       userSocket = null;
     }
