@@ -98,6 +98,7 @@ io.on("connection", (socket) => {
       piSocket = null;
       console.log("Disconnected from the pi");
       io.emit("piDisconnected");
+      userSocket = null; //must reenter code to become user
     } else if (userSocket && socket.id == userSocket.id) {
       userSocket = null;
     }
