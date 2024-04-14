@@ -72,6 +72,7 @@ io.on("connection", (socket) => {
     if (msg == "3.1415926535897932384626433832769") {
       socket.join("pi");
       socket.emit("supersecretpimessage", "success");
+      io.emit("piJoined");
       piSocket = socket;
       console.log("Connected to the pi");
     }
@@ -96,7 +97,7 @@ io.on("connection", (socket) => {
     if (piSocket && socket.id == piSocket.id) {
       piSocket = null;
       console.log("Disconnected from the pi");
-      io.to("user").emit("piDisconnected");
+      io.emit("piDisconnected");
     } else if (userSocket && socket.id == userSocket.id) {
       userSocket = null;
     }

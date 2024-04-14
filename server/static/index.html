@@ -95,6 +95,11 @@
         }
       });
 
+      socket.on("piJoined", () => {
+        console.log("Connected to the pi");
+        document.getElementById("error-msg").innerHTML = "";
+      });
+
       function connect() {
         console.log("trying to connect over here");
         socket.emit("tryConnect");
