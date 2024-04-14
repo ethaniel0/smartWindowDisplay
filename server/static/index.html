@@ -9,6 +9,9 @@
         display: flex;
         flex-direction: column;
       }
+      .hidden {
+        display: none;
+      }
       .error {
         color: red;
       }
@@ -76,8 +79,19 @@
         if (msg == "success") {
           let connectBtn = document.getElementById("connect-btn");
           let code_input = document.getElementById("joinCode");
-          connectBtn.remove();
+          connectBtn.classList.add("hidden");
           code_input.remove();
+        }
+      });
+
+      socket.on("piDisconnected", () => {
+        console.log("No pi");
+        clearButtons();
+        document.getElementById("error-msg").innerHTML = "PI IS GONE";
+        let connectBtn = document.getElementById("connect-btn");
+        connectBtn.classList.remove("hidden");
+        if (document.getElementById("joinCode")) {
+          document.getElementById("joinCode").remove();
         }
       });
 
