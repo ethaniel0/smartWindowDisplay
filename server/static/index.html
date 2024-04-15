@@ -62,6 +62,8 @@
             simonButtons();
           } else if (list == "Snake" || list == "Maze") {
             gamepad();
+          } else if (list == "Jump") {
+            gamepad(false);
           }
           return;
         }
@@ -121,7 +123,7 @@
         }
       }
 
-      function gamepad() {
+      function gamepad(leftright = true) {
         let buttons = document.getElementById("buttons");
         let up = document.createElement("button");
         up.innerHTML = "Up";
@@ -132,6 +134,8 @@
         down.innerHTML = "Down";
         down.onclick = () => socket.emit("gameCommand", "down");
         buttons.appendChild(down);
+
+        if (!leftright) return;
 
         let left = document.createElement("button");
         left.innerHTML = "Left";
