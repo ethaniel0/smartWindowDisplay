@@ -4,6 +4,8 @@ import random
 import socketio
 import testdisplay
 import time
+from random import choice
+import numpy as np
 
 class App(abc.ABC):
     def __init__(self, name: str, sio: socketio.Client, display: testdisplay.TestDisplay):
@@ -164,20 +166,22 @@ class Snake(App):
         self.eaten = False
         self.last_time = time.perf_counter()
 
+    def start_setup(self):
+        self.display.clear()
+        self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
+        self.display.set_pixel(self.snake[0][0], self.snake[0][1], testdisplay.to_rgb((0, 255, 0)))
+        self.display.update_frame()
+
     def restart(self):
         self.state = "start"
         self.snake = [[random.randint(0, 26), random.randint(0, 19)]]
         self.food = [random.randint(0, 26), random.randint(0, 19)]
-        self.display.clear()
+        self.start_setup()
         self.direction = "right"
         self.score = 0
 
     def update(self, input: str):
-        if self.state == "start":
-            self.display.update_frame()
-            self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
-            self.display.set_pixel(self.snake[0][0], self.snake[0][1], testdisplay.to_rgb((0, 255, 0)))
-    
+        if self.state == "start":    
             if input:
                 self.state = "running"
                 self.direction = input
@@ -243,12 +247,37 @@ class Maze(App):
         self.maze = [[0 for i in range(27)] for j in range(20)]
 
     def generate_maze(self):
-        #randomly generate a maze
-        for i in range(27):
-            for j in range(20):
-                if random.random() < 0.3:
-                    self.maze[j][i] = 1
-    
+        width = 27
+        height = 20
+        maze = [[1] * width for _ in range(height)]  # Initialize maze with walls
+        start_x = random.randint(0, width - 1)
+        start_y = random.randint(0, height - 1)
+        maze[start_y][start_x] = 0  # Set starting point
+
+        stack = [(start_x, start_y)]
+
+        while stack:
+            current_x, current_y = stack[-1]
+            neighbors = []
+            for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+                new_x, new_y = current_x + dx, current_y + dy
+                if 0 <= new_x < width and 0 <= new_y < height and maze[new_y][new_x] == 1:
+                    count = 0
+                    for dx2, dy2 in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+                        adj_x, adj_y = new_x + dx2, new_y + dy2
+                        if 0 <= adj_x < width and 0 <= adj_y < height and maze[adj_y][adj_x] == 0:
+                            count += 1
+                    if count == 1:
+                        neighbors.append((new_x, new_y))
+            if neighbors:
+                chosen_x, chosen_y = random.choice(neighbors)
+                maze[chosen_y][chosen_x] = 0
+                stack.append((chosen_x, chosen_y))
+            else:
+                stack.pop()
+
+        self.maze = maze
+
     def display_maze(self):
         for i in range(27):
             for j in range(20):
@@ -257,19 +286,20 @@ class Maze(App):
                 else:
                     self.display.set_pixel(i, j, testdisplay.to_rgb((255, 255, 255)))
 
+        self.display.set_pixel(self.goal[0], self.goal[1], testdisplay.to_rgb((255, 0, 0)))
+        self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
+        self.display.update_frame()
+
     def restart(self):
         self.state = "start"
         self.player = [0, 0]
         self.goal = [26, 19]
         self.display.clear()
-        # self.generate_maze()
-        # self.display_maze()
+        self.generate_maze()
+        self.display_maze()
 
     def update(self, input: str):
         if self.state == "start":
-            self.display.update_frame()
-            self.display.set_pixel(self.goal[0], self.goal[1], testdisplay.to_rgb((255, 0, 0)))
-            self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
             if input:
                 self.state = "running"
                 self.direction = input
@@ -287,13 +317,17 @@ class Maze(App):
 
     def move(self):
         if self.direction == "up":
-            self.player[1] -= 1
+            if self.player[1] > 0 and self.maze[self.player[1] - 1][self.player[0]] == 0: # if not at the edge and not a wall
+                self.player[1] -= 1
         elif self.direction == "down":
-            self.player[1] += 1
+            if self.player[1] < 19 and self.maze[self.player[1] + 1][self.player[0]] == 0:
+                self.player[1] += 1
         elif self.direction == "left":
-            self.player[0] -= 1
+            if self.player[0] > 0 and self.maze[self.player[1]][self.player[0] - 1] == 0:
+                self.player[0] -= 1
         elif self.direction == "right":
-            self.player[0] += 1
+            if self.player[0] < 26 and self.maze[self.player[1]][self.player[0] + 1] == 0:
+                self.player[0] += 1
         print ("player now at: ", self.player)
         self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
         
@@ -313,18 +347,41 @@ class Jump(App):
         self.state = "start"
         self.options = ['up', 'down']
         self.player = [0, 0]
-        self.course = [[0 for i in range(27)] for j in range(20)]
-        self.set_course()
         self.last_time = time.perf_counter()
         self.obstacles = []
-
-    def set_course(self):
+    
+    def display_course(self):
         for i in range(27):
             for j in range(20):
-                if j < 10:
-                    self.course[j][i] = 0
-                else:
-                    self.course[j][i] = 1
+                self.display.set_pixel(i, j, testdisplay.to_rgb((255, 255, 255)))
+        for obstacle in self.obstacles:
+            self.display.set_pixel(obstacle[0], obstacle[1], testdisplay.to_rgb((0, 0, 0)))
+        self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
+        self.display.update_frame()
+
+
+    def restart(self):
+        self.state = "start"
+        self.player = [0, 0]
+        self.display.clear()
+        self.display_course()
+
+    def update(self, input: str):
+        if self.state == "start":
+            if input:
+                self.state = "running"
+                self.direction = input
+                print("Jump is moving ", self.direction)
+
+        elif self.state == "running":
+            if input:
+                self.change_direction(input)
+                print("Jump is moving ", self.direction)
+                self.move()
+                self.display.update_frame()
+            if self.player[0] == 26:
+                print("You win!")
+                self.restart()
 
     def generate_obstacles(self):
         #randomly generate obstacles
