@@ -3,15 +3,13 @@ import time
 import random
 import program_manager
 import time
-from threading import Semaphore
 
 #For connecting to the server:
-link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
-# link = 'http://localhost:3000/'
+# link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
+link = 'http://localhost:3000/'
 sio = socketio.Client()
 
 manager = program_manager.ProgramManager(sio)
-managerSemaphore = Semaphore()
 
 #Pi Messages:
 @sio.on('tryConnect')
@@ -32,15 +30,12 @@ def onpiinit(data):
 def on_join(data):
     print('Joined: ', data)
     if data == 'success':
-        managerSemaphore.acquire()
         options = manager.get_page(manager.state)
-        managerSemaphore.release()
         sio.emit('programList', options)
         
 @sio.on('press')
 def press_item(data):
     print('Pressed: ', data)
-    managerSemaphore.acquire()
     if data == 'Back':
         options = manager.go_one_page_up()
         sio.emit('programList', options)
@@ -49,14 +44,11 @@ def press_item(data):
         if options == '':
             sio.emit('programList', ['Back'])
         sio.emit('programList', options)
-    managerSemaphore.release()
 
 @sio.on('gameCommand')
 def game_command(data):
     print('Command: ', data)
-    managerSemaphore.acquire()
     manager.get_command(data)
-    managerSemaphore.release()
             
 #on disconnect
 @sio.event
@@ -80,9 +72,7 @@ def main():
         
         if (time.perf_counter() - last_time) > update_frequency and sio.connected:
             last_time = time.perf_counter()
-            managerSemaphore.acquire()
             manager.update_program()
-            managerSemaphore.release()
 
 if __name__ == '__main__':
     main()

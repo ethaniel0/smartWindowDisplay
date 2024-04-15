@@ -1,6 +1,8 @@
 import socketio
 import programs
 import testdisplay
+from threading import Semaphore
+managerSem = Semaphore()
 
 class ProgramManager:
     def __init__(self, sio: socketio.Client):
@@ -22,6 +24,7 @@ class ProgramManager:
         
     
     def go_one_page_up(self):
+        managerSem.acquire()
         if self.state == "main":
             self.state = "main"
         
@@ -39,6 +42,8 @@ class ProgramManager:
             if found:
                 break  
         
+        managerSem.release()
+        
         name_list = []
         for name in self.pages[self.state]:
             if isinstance(name, str):
@@ -53,9 +58,11 @@ class ProgramManager:
         if page not in self.pages:
             return ""
 
+        managerSem.acquire()
         self.state = page
+        managerSem.release()
+        
         if isinstance(self.pages[page], programs.App):
-            app: programs.App = self.pages[page]
             self.startup = True
             return page
         
@@ -72,16 +79,23 @@ class ProgramManager:
 
     def get_command(self, command):
         print('setting command: ', command)
+        managerSem.acquire()
         self.last_input = command
+        managerSem.release()
     
     def update_program(self):
         if not isinstance(self.pages[self.state], programs.App):
+            self.display.clear()
+            self.display.update_frame()
             return
+        
+        managerSem.acquire()
         if self.startup:
             self.pages[self.state].restart()
             self.startup = False
         self.pages[self.state].update(self.last_input)
         self.last_input = ""
+        managerSem.release()
     
 
     
