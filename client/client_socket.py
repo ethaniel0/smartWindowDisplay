@@ -65,31 +65,21 @@ def disconnect():
     print('Disconnected from server')
 
 def display_large_number(num, section):
-    digits = [[[1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]],
-              [[0, 1, 0], [1, 1, 0], [0, 1, 0], [0, 1, 0], [1, 1, 1]],
-              [[1, 1, 1], [0, 0, 1], [1, 1, 1], [1, 0, 0], [1, 1, 1]],
-              [[1, 1, 1], [0, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]],
-              [[1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [0, 0, 1]],
-              [[1, 1, 1], [1, 0, 0], [1, 1, 1], [0, 0, 1], [1, 1, 1]],
-              [[1, 1, 1], [1, 0, 0], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
-              [[1, 1, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]],
-              [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
-              [[1, 1, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]]]
     #section 1 is the left section (0-8), section 2 is the middle section (9-17), section 3 is the right section (18-26)
     if section == 1:
         for i in range(5):
             for j in range(3):
-                if digits[num][i][j] == 1:
+                if piDisplay.digits[num][i][j] == 1:
                     piDisplay.set_pixel(j + 3, i + 7, testdisplay.to_rgb((218,154,230)))
     elif section == 2:
         for i in range(5):
             for j in range(3):
-                if digits[num][i][j] == 1:
+                if piDisplay.digits[num][i][j] == 1:
                     piDisplay.set_pixel(j + 12, i  + 7, testdisplay.to_rgb((173,50,173)))
     elif section == 3:
         for i in range(5):
             for j in range(3):
-                if digits[num][i][j] == 1:
+                if piDisplay.digits[num][i][j] == 1:
                     piDisplay.set_pixel(j + 21, i  + 7, testdisplay.to_rgb((148,3,148)))
     else:
         print("Invalid section number")
@@ -101,7 +91,7 @@ def main():
     last_time = time.time()
     update_frequency = 1/30
     last_time = time.perf_counter()
-    piDisplay.set_all_pixels((3,42,148))
+    piDisplay.fill_with_digits((3,42,148))
     piDisplay.update_frame()
     while True:
         if not sio.connected:

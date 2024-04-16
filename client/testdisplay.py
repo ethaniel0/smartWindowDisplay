@@ -1,4 +1,5 @@
 import tkinter as tk
+import random
 
 def to_rgb(rgb):
         """translates an rgb tuple of int to a tkinter friendly color code
@@ -14,6 +15,16 @@ class TestDisplay(tk.Tk):
         for i in range(27):
             for j in range(20):
                 self.set_pixel(i, j, to_rgb((0, 0, 0)))
+        self.digits = [[[1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]],
+                       [[0, 1, 0], [1, 1, 0], [0, 1, 0], [0, 1, 0], [1, 1, 1]],
+                       [[1, 1, 1], [0, 0, 1], [1, 1, 1], [1, 0, 0], [1, 1, 1]],
+                       [[1, 1, 1], [0, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]],
+                       [[1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [0, 0, 1]],
+                       [[1, 1, 1], [1, 0, 0], [1, 1, 1], [0, 0, 1], [1, 1, 1]],
+                       [[1, 1, 1], [1, 0, 0], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
+                       [[1, 1, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]],
+                       [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
+                       [[1, 1, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]]]
     
     def set_pixel(self, x, y, color):
         self.canvas.create_rectangle(x*10, y*10, x*10+10, y*10+10, fill=color, outline="")
@@ -27,6 +38,19 @@ class TestDisplay(tk.Tk):
     
     def set_all_pixels(self, color):
         self.canvas.create_rectangle(0, 0, 270, 200, fill=to_rgb(color))
+    
+    def pane_digit(self, num, panex, paney, color):
+        print("Displaying number: ", num, " in pane ", panex, paney)
+        for i in range(5):
+            for j in range(3):
+                if self.digits[num][i][j] == 1:
+                    self.set_pixel(j + 3*panex, i + 5*paney, to_rgb(color))
+    
+    def fill_with_digits(self, color):
+        for i in range(9):
+            for j in range(4):
+                num = random.randint(0, 9)
+                self.pane_digit(num, i, j, color)
     
     def clear(self):
         self.set_all_pixels((0, 0, 0))
