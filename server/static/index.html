@@ -58,11 +58,14 @@
           backButton.innerHTML = "Back";
           backButton.onclick = () => socket.emit("press", "Back");
           buttons.appendChild(backButton);
+
           if (list == "Simon") {
+            startButton();
             simonButtons();
           } else if (list == "Snake" || list == "Maze") {
             gamepad();
           } else if (list == "Jump") {
+            startButton();
             gamepad(false);
           }
           return;
@@ -146,6 +149,17 @@
         right.innerHTML = "Right";
         right.onclick = () => socket.emit("gameCommand", "right");
         buttons.appendChild(right);
+      }
+
+      function startButton() {
+        let startButton = document.createElement("button");
+        startButton.innerHTML = "Start";
+        //emit start command and remove button
+        startButton.onclick = () => {
+          socket.emit("gameCommand", "start");
+          startButton.remove();
+        };        
+        buttons.appendChild(startButton);
       }
     </script>
   </body>

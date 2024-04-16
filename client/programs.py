@@ -206,7 +206,7 @@ class Snake(App):
                 print("Snake is moving ", self.direction)
 
     def move(self):
-        if self.last_time + 0.25 > time.perf_counter(): # 1 second per move
+        if self.last_time + 0.25 > time.perf_counter(): # .25 second per move
             return
         new_head = self.snake[0].copy()
         if self.direction == "up":
@@ -275,6 +275,8 @@ class Maze(App):
                 stack.append((chosen_x, chosen_y))
             else:
                 stack.pop()
+        
+        maze[19][26] = 0  # Set goal
 
         self.maze = maze
 
@@ -304,6 +306,8 @@ class Maze(App):
                 self.state = "running"
                 self.direction = input
                 print("Maze is moving ", self.direction)
+                self.move()
+                self.display.update_frame()
 
         elif self.state == "running":
             if input:
@@ -346,53 +350,85 @@ class Jump(App):
         super().__init__("Jump", sio, display)
         self.state = "start"
         self.options = ['up', 'down']
-        self.player = [0, 0]
+        self.direction = "level"
+        self.ground_level = 10
+        self.player = [[1, self.ground_level], [1, self.ground_level - 1], [1, self.ground_level - 2]]
         self.last_time = time.perf_counter()
         self.obstacles = []
     
     def display_course(self):
+        if self.state == "start":
+            for i in range(27):
+                for j in range(20):
+                    if j > self.ground_level: self.display.set_pixel(i, j, testdisplay.to_rgb((255, 255, 255)))
+            for obstacle in self.obstacles:
+                self.display.set_pixel(obstacle[0], obstacle[1], testdisplay.to_rgb((0, 0, 0)))
+        
         for i in range(27):
-            for j in range(20):
-                self.display.set_pixel(i, j, testdisplay.to_rgb((255, 255, 255)))
-        for obstacle in self.obstacles:
-            self.display.set_pixel(obstacle[0], obstacle[1], testdisplay.to_rgb((0, 0, 0)))
-        self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
-        self.display.update_frame()
+            for j in range(self.ground_level + 1):
+                self.display.set_pixel(i, j, testdisplay.to_rgb((0, 0, 0)))
 
+        for i, j in self.player:
+            self.display.set_pixel(i,j, testdisplay.to_rgb((0, 0, 255)))
+
+        for i,j in self.obstacles:
+            self.display.set_pixel(i,j, testdisplay.to_rgb((255, 0, 0)))
+
+        self.display.update_frame()
 
     def restart(self):
         self.state = "start"
-        self.player = [0, 0]
+        self.player = [[1, self.ground_level], [1, self.ground_level - 1], [1, self.ground_level - 2]]
+        self.obstacles = []
         self.display.clear()
         self.display_course()
+        self.last_time = time.perf_counter()
 
     def update(self, input: str):
         if self.state == "start":
-            if input:
+            if input == "start":
                 self.state = "running"
-                self.direction = input
-                print("Jump is moving ", self.direction)
+                print("Jump is starting")
 
         elif self.state == "running":
+            self.move()
             if input:
                 self.change_direction(input)
                 print("Jump is moving ", self.direction)
-                self.move()
-                self.display.update_frame()
-            if self.player[0] == 26:
-                print("You win!")
-                self.restart()
+            if self.obstacles and False:
+                if self.player[0] in self.obstacles or self.player[2] in self.obstacles:
+                    print("You lose!")
+                    self.restart()
+
 
     def generate_obstacles(self):
+        #shift obstacles to the left
+        for obstacle in self.obstacles:
+            obstacle[0] -= 1
+        #remove obstacles that are off the screen
+        self.obstacles = [obstacle for obstacle in self.obstacles if obstacle[0] > 0]
+
         #randomly generate obstacles
         if random.random() < 0.3:
             if random.random() < 0.5:
-                self.obstacles.append([26, 10]) #low obstacle
+                self.obstacles.append([26, self.ground_level]) #low obstacle
             else:
-                self.obstacles.append([26, 8]) #high obstacle 
+                self.obstacles.append([26, self.ground_level-2]) #high obstacle 
         
     def move(self):
+        if self.last_time + 1 > time.perf_counter(): # 1 second per move
+            return
+        self.generate_obstacles()
         if self.direction == "up":
-            self.player[1] -= 1
+            self.player = [[1, self.ground_level - 2], [1, self.ground_level - 3], [1, self.ground_level - 4]]
         elif self.direction == "down":
-            self.player[1] += 1  
+            self.player = [[1, self.ground_level], [1, self.ground_level - 1], [2, self.ground_level - 1]]
+        self.last_time = time.perf_counter()
+        print("player now at: ", self.direction)
+        self.display_course()
+
+    def change_direction(self, direction):
+        if direction == "up":
+            self.direction = "up"
+        elif direction == "down":
+            self.direction = "down"

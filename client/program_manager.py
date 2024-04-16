@@ -5,11 +5,11 @@ from threading import Semaphore
 managerSem = Semaphore()
 
 class ProgramManager:
-    def __init__(self, sio: socketio.Client):
+    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
         self.state = "main"
         self.sio = sio
-        self.display = testdisplay.TestDisplay()
-        
+        self.display = display
+
         self.pages = {
             "main": ["Duke Game", "Weather", "Games"],
             "Games": ["Simon", "Snake", "Maze", "Jump"],
