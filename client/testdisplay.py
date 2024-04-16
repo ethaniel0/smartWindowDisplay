@@ -40,7 +40,6 @@ class TestDisplay(tk.Tk):
         self.canvas.create_rectangle(0, 0, 270, 200, fill=to_rgb(color))
     
     def pane_digit(self, num, panex, paney, color):
-        print("Displaying number: ", num, " in pane ", panex, paney)
         for i in range(5):
             for j in range(3):
                 if self.digits[num][i][j] == 1:
