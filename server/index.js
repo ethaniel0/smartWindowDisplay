@@ -52,14 +52,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("press", (msg) => {
-    if (piSocket) {
+    if (piSocket && userSocket && socket.id == userSocket.id) {
       console.log("sending program", msg);
       io.to("pi").emit("press", msg);
     }
   });
 
   socket.on("gameCommand", (msg) => {
-    if (piSocket) {
+    if (piSocket && userSocket && socket.id == userSocket.id) {
       console.log("sending command", msg);
       io.to("pi").emit("gameCommand", msg);
     }

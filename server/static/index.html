@@ -154,11 +154,10 @@
       function startButton() {
         let startButton = document.createElement("button");
         startButton.innerHTML = "Start";
-        //emit start command and remove button
         startButton.onclick = () => {
           socket.emit("gameCommand", "start");
           startButton.remove();
-        };        
+        };
         buttons.appendChild(startButton);
       }
     </script>
