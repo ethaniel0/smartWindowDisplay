@@ -34,7 +34,7 @@ class Simon(App):
     def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
         super().__init__("Simon", sio, display)
         self.state = "start"
-        self.options = ['Red', 'Blue', 'Green', 'Yellow']
+        self.options = ['red', 'blue', 'green', 'yellow']
         self.sequence = []
         self.user_sequence = []
         self.sequence_index = 0
@@ -98,20 +98,20 @@ class Simon(App):
         seq_num = self.sequence[self.sequence_index]
         color = color_map[seq_num]
         
-        self.show_rect(5, 5, 5, 5, (80, 0, 0))
-        self.show_rect(10, 5, 5, 5, (0, 0, 80))
-        self.show_rect(5, 10, 5, 5, (0, 80, 0))
-        self.show_rect(10, 10, 5, 5, (80, 80, 0))
+        self.show_rect(10, 5, 5, 5, (80, 0, 0))
+        self.show_rect(10, 10, 5, 5, (0, 0, 80))
+        self.show_rect(5, 5, 5, 5, (0, 80, 0))
+        self.show_rect(5, 10, 5, 5, (80, 80, 0))
         
         if now - self.last_time < 0.8:
             if seq_num == 0:
-                self.show_rect(5, 5, 5, 5, color)
-            elif seq_num == 1:
                 self.show_rect(10, 5, 5, 5, color)
-            elif seq_num == 2:
-                self.show_rect(5, 10, 5, 5, color)
-            elif seq_num == 3:
+            elif seq_num == 1:
                 self.show_rect(10, 10, 5, 5, color)
+            elif seq_num == 2:
+                self.show_rect(5, 5, 5, 5, color)
+            elif seq_num == 3:
+                self.show_rect(5, 10, 5, 5, color)
         
         now = time.perf_counter()
 
@@ -119,7 +119,7 @@ class Simon(App):
         if not input or input not in self.options:
             return
         
-        num_input = ['Red', 'Blue', 'Green', 'Yellow'].index(input)
+        num_input = ['red', 'blue', 'green', 'yellow'].index(input)
         
         print("User input: ", num_input)
         
@@ -235,6 +235,8 @@ class Snake(App):
             self.direction = "left"
         elif direction == "right" and self.direction != "left":
             self.direction = "right"
+        else:
+            print('command not recognized:', direction)
 
 class Maze(App):
     def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
