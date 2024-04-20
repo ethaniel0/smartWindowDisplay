@@ -42,6 +42,12 @@ def on_join(data):
         sio.emit('programList', options)
         connected_to_device_flag = True
         
+@sio.on('userGone')
+def on_user_gone():
+    global connected_to_device_flag
+    print('User MIA')
+    connected_to_device_flag = False
+        
 @sio.on('press')
 def press_item(data):
     print('Pressed: ', data)
