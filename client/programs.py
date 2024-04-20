@@ -53,7 +53,7 @@ class Simon(App):
         self.user_sequence_index = 0
         
     def start_state(self, input: str):
-        if input:
+        if input == "start":
             self.sequence = []
             self.user_sequence = []
             self.sequence_index = 0
@@ -393,10 +393,11 @@ class Jump(App):
                 print("Jump is starting")
 
         elif self.state == "running":
-            self.move()
+            # self.move()
             if input:
                 self.change_direction(input)
                 print("Jump is moving ", self.direction)
+                self.move()
             if self.obstacles and False:
                 if self.player[0] in self.obstacles or self.player[2] in self.obstacles:
                     print("You lose!")
