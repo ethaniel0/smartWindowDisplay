@@ -322,6 +322,7 @@ class Maze(App):
                 self.restart()
 
     def move(self):
+        self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((2, 171, 74)))
         if self.direction == "up":
             if self.player[1] > 0 and self.maze[self.player[1] - 1][self.player[0]] == 0: # if not at the edge and not a wall
                 self.player[1] -= 1
@@ -334,7 +335,7 @@ class Maze(App):
         elif self.direction == "right":
             if self.player[0] < 26 and self.maze[self.player[1]][self.player[0] + 1] == 0:
                 self.player[0] += 1
-        print ("player now at: ", self.player)
+        print("player now at: ", self.player)
         self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
         
     def change_direction(self, direction):
