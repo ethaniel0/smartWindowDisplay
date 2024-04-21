@@ -101,10 +101,13 @@ io.on("connection", (socket) => {
       userSocket = null; //must reenter code to become user
     } else if (userSocket && socket.id == userSocket.id) {
       userSocket = null;
+      if (piSocket){
+        io.to('pi').emit('userGone');
+      }
     }
   });
 });
 
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`Example app listening on port http://localhost:${port}`);
 });
