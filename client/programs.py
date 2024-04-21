@@ -126,6 +126,7 @@ class Simon(App):
         if num_input != self.sequence[self.sequence_index]:
             print("You lose!")
             self.state = "start"
+            self.sio.emit('youLost')
             return
         else:
             print('Correct!')
@@ -394,40 +395,44 @@ class Jump(App):
                 print("Jump is starting")
 
         elif self.state == "running":
-            # self.move()
+            self.move()
             if input:
                 self.change_direction(input)
                 print("Jump is moving ", self.direction)
-                self.move()
-            if self.obstacles and False:
+            if self.obstacles:
                 if self.player[0] in self.obstacles or self.player[2] in self.obstacles:
                     print("You lose!")
+                    self.sio.emit('youLost')
                     self.restart()
 
 
     def generate_obstacles(self):
+        if self.last_time + 1 > time.perf_counter(): # 1 second per move
+            return
+        
         #shift obstacles to the left
         for obstacle in self.obstacles:
             obstacle[0] -= 1
         #remove obstacles that are off the screen
         self.obstacles = [obstacle for obstacle in self.obstacles if obstacle[0] > 0]
-
         #randomly generate obstacles
         if random.random() < 0.3:
             if random.random() < 0.5:
                 self.obstacles.append([26, self.ground_level]) #low obstacle
             else:
                 self.obstacles.append([26, self.ground_level-2]) #high obstacle 
-        
+        self.last_time = time.perf_counter()
+
     def move(self):
-        if self.last_time + 1 > time.perf_counter(): # 1 second per move
+        if self.last_time % 0.25 > time.perf_counter() % 0.26:
             return
+    
         self.generate_obstacles()
         if self.direction == "up":
             self.player = [[1, self.ground_level - 2], [1, self.ground_level - 3], [1, self.ground_level - 4]]
         elif self.direction == "down":
             self.player = [[1, self.ground_level], [1, self.ground_level - 1], [2, self.ground_level - 1]]
-        self.last_time = time.perf_counter()
+
         print("player now at: ", self.direction)
         self.display_course()
 
