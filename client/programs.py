@@ -355,6 +355,7 @@ class Jump(App):
         self.state = "start"
         self.options = ['up', 'down']
         self.direction = "level"
+        self.score = 0
         self.ground_level = 10
         self.player = [[1, self.ground_level], [1, self.ground_level - 1], [1, self.ground_level - 2]]
         self.last_time = time.perf_counter()
@@ -382,8 +383,10 @@ class Jump(App):
 
     def restart(self):
         self.state = "start"
+        self.direction = "level"
         self.player = [[1, self.ground_level], [1, self.ground_level - 1], [1, self.ground_level - 2]]
         self.obstacles = []
+        self.score = 0
         self.display.clear()
         self.display_course()
         self.last_time = time.perf_counter()
@@ -399,39 +402,50 @@ class Jump(App):
             if input:
                 self.change_direction(input)
                 print("Jump is moving ", self.direction)
+                self.move(True)
             if self.obstacles:
                 if self.player[0] in self.obstacles or self.player[2] in self.obstacles:
-                    print("You lose!")
+                    print("You lose! Score: ", self.score)
                     self.sio.emit('youLost')
                     self.restart()
 
-
-    def generate_obstacles(self):
-        if self.last_time + 1 > time.perf_counter(): # 1 second per move
+    def generate_obstacles(self, time_per_move = 1):
+        if self.last_time + time_per_move > time.perf_counter(): # 1 second per move
             return
         
         #shift obstacles to the left
         for obstacle in self.obstacles:
             obstacle[0] -= 1
         #remove obstacles that are off the screen
+        if self.obstacles and self.obstacles[0][0] < 0:
+            self.score += 1
         self.obstacles = [obstacle for obstacle in self.obstacles if obstacle[0] > 0]
         #randomly generate obstacles
-        if random.random() < 0.3:
+        if random.random() < 0.3 and (self.obstacles == [] or self.obstacles[-1][0] < 25):
             if random.random() < 0.5:
                 self.obstacles.append([26, self.ground_level]) #low obstacle
             else:
-                self.obstacles.append([26, self.ground_level-2]) #high obstacle 
+                self.obstacles.append([26, self.ground_level-2]) #high obstacle
+
+        if self.direction == "up":
+            self.direction = "level"
+            print("Jump is moving ", self.direction)
+            self.move(True)
+
+        self.display_course()
         self.last_time = time.perf_counter()
 
-    def move(self):
-        if self.last_time % 0.25 > time.perf_counter() % 0.26:
-            return
-    
-        self.generate_obstacles()
+    def move(self, move_self = False): 
+        self.generate_obstacles(.1)
+        if not move_self:
+            return 
+        
         if self.direction == "up":
             self.player = [[1, self.ground_level - 2], [1, self.ground_level - 3], [1, self.ground_level - 4]]
         elif self.direction == "down":
             self.player = [[1, self.ground_level], [1, self.ground_level - 1], [2, self.ground_level - 1]]
+        elif self.direction == "level":
+            self.player = [[1, self.ground_level], [1, self.ground_level - 1], [1, self.ground_level - 2]]
 
         print("player now at: ", self.direction)
         self.display_course()
