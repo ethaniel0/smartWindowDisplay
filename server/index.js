@@ -101,6 +101,9 @@ io.on("connection", (socket) => {
       userSocket = null; //must reenter code to become user
     } else if (userSocket && socket.id == userSocket.id) {
       userSocket = null;
+      if (piSocket){
+        io.to('pi').emit('userGone');
+      }
     }
   });
 });
