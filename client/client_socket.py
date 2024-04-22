@@ -104,7 +104,7 @@ def display_large_number(num, section):
 def main():
     global display_numbers_flag, join_code, press, gameCommand
     piDisplay.fill_with_digits((3,42,148))
-    piDisplay.update_frame()
+    piDisplay.display()
     while True:
         if not sio.connected:
             try: 
@@ -121,7 +121,7 @@ def main():
             display_large_number(join_code[0], 1)
             display_large_number(join_code[1], 2)
             display_large_number(join_code[2], 3)
-            piDisplay.update_frame()
+            piDisplay.display()
             display_numbers_flag = False
         
         if sio.connected and connected_to_device_flag:

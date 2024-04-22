@@ -2,17 +2,17 @@ import abc
 from abc import abstractmethod
 import random
 import socketio
-import testdisplay
 import time
 from random import choice
 import numpy as np
 import pickle
+from general_display import Display, to_rgb
 
 class App(abc.ABC):
-    def __init__(self, name: str, sio: socketio.Client, display: testdisplay.TestDisplay):
+    def __init__(self, name: str, sio: socketio.Client, display: Display):
         self.name: str = name
         self.sio: socketio.Client = sio
-        self.display: testdisplay.TestDisplay = display
+        self.display: Display = display
     
     @abstractmethod
     def restart():
@@ -32,7 +32,7 @@ class App(abc.ABC):
         return self.name
 
 class Simon(App):
-    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+    def __init__(self, sio: socketio.Client, display: Display):
         super().__init__("Simon", sio, display)
         self.state = "start"
         self.options = ['red', 'blue', 'green', 'yellow']
@@ -69,14 +69,14 @@ class Simon(App):
         if (now - self.last_time) > 1:
             color = (0, 0, 0) if self.start_anim_frame == 1 else (255, 255, 255)
             for i in range(27):
-                self.display.set_pixel(i, 0, testdisplay.to_rgb(color))
+                self.display.set_pixel(i, 0, to_rgb(color))
             self.last_time = now
             self.start_anim_frame = 1 - self.start_anim_frame
             
     def show_rect(self, x, y, w, h, color):
         for i in range(x, x + w):
             for j in range(y, y + h):
-                self.display.set_pixel(i, j, testdisplay.to_rgb(color))
+                self.display.set_pixel(i, j, to_rgb(color))
         
     def show_sequence(self):
         if not self.started_show_sequence:
@@ -151,13 +151,13 @@ class Simon(App):
             self.show_sequence()
         elif self.state == "running":
             self.get_input(input)
-        self.display.update_frame()
+        self.display.display()
 
     def add_to_sequence(self):
         self.sequence.append(random.randint(0, 3))
               
 class Snake(App):
-    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+    def __init__(self, sio: socketio.Client, display: Display):
         super().__init__("Snake", sio, display)
         self.state = "start"
         self.options = ['up', 'down', 'left', 'right']
@@ -170,9 +170,9 @@ class Snake(App):
 
     def start_setup(self):
         self.display.clear()
-        self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
-        self.display.set_pixel(self.snake[0][0], self.snake[0][1], testdisplay.to_rgb((0, 255, 0)))
-        self.display.update_frame()
+        self.display.set_pixel(self.food[0], self.food[1], to_rgb((255, 0, 0)))
+        self.display.set_pixel(self.snake[0][0], self.snake[0][1], to_rgb((0, 255, 0)))
+        self.display.display()
 
     def restart(self):
         self.state = "start"
@@ -201,8 +201,8 @@ class Snake(App):
             elif self.snake[0] in self.snake[1:]:
                 print("You lose!, Score: ", self.score)
                 self.restart()
-            self.display.update_frame()
-            self.display.set_pixel(self.food[0], self.food[1], testdisplay.to_rgb((255, 0, 0)))
+            self.display.display()
+            self.display.set_pixel(self.food[0], self.food[1], to_rgb((255, 0, 0)))
             if input:
                 self.change_direction(input)
                 print("Snake is moving ", self.direction)
@@ -220,9 +220,9 @@ class Snake(App):
         elif self.direction == "right":
             new_head[0] += 1
         self.snake.insert(0, new_head)
-        self.display.set_pixel(new_head[0], new_head[1], testdisplay.to_rgb((0, 255, 0)))
+        self.display.set_pixel(new_head[0], new_head[1], to_rgb((0, 255, 0)))
         if not self.eaten:
-            self.display.set_pixel(self.snake[-1][0], self.snake[-1][1], testdisplay.to_rgb((0, 0, 0)))
+            self.display.set_pixel(self.snake[-1][0], self.snake[-1][1], to_rgb((0, 0, 0)))
             self.snake.pop()
         else:
             self.eaten = False
@@ -241,7 +241,7 @@ class Snake(App):
             print('command not recognized:', direction)
 
 class Maze(App):
-    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+    def __init__(self, sio: socketio.Client, display: Display):
         super().__init__("Maze", sio, display)
         self.state = "start"
         self.options = ['up', 'down', 'left', 'right']
@@ -288,13 +288,13 @@ class Maze(App):
         for i in range(27):
             for j in range(20):
                 if self.maze[j][i] == 1:
-                    self.display.set_pixel(i, j, testdisplay.to_rgb((0, 0, 0)))
+                    self.display.set_pixel(i, j, to_rgb((0, 0, 0)))
                 else:
-                    self.display.set_pixel(i, j, testdisplay.to_rgb((255, 255, 255)))
+                    self.display.set_pixel(i, j, to_rgb((255, 255, 255)))
 
-        self.display.set_pixel(self.goal[0], self.goal[1], testdisplay.to_rgb((255, 0, 0)))
-        self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
-        self.display.update_frame()
+        self.display.set_pixel(self.goal[0], self.goal[1], to_rgb((255, 0, 0)))
+        self.display.set_pixel(self.player[0], self.player[1], to_rgb((0, 255, 0)))
+        self.display.display()
 
     def restart(self):
         self.state = "start"
@@ -311,20 +311,20 @@ class Maze(App):
                 self.direction = input
                 print("Maze is moving ", self.direction)
                 self.move()
-                self.display.update_frame()
+                self.display.display()
 
         elif self.state == "running":
             if input:
                 self.change_direction(input)
                 print("Maze is moving ", self.direction)
                 self.move()
-                self.display.update_frame()
+                self.display.display()
             if self.player == self.goal:
                 print("You win!")
                 self.restart()
 
     def move(self):
-        self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((2, 171, 74)))
+        self.display.set_pixel(self.player[0], self.player[1], to_rgb((2, 171, 74)))
         if self.direction == "up":
             if self.player[1] > 0 and self.maze[self.player[1] - 1][self.player[0]] == 0: # if not at the edge and not a wall
                 self.player[1] -= 1
@@ -338,7 +338,7 @@ class Maze(App):
             if self.player[0] < 26 and self.maze[self.player[1]][self.player[0] + 1] == 0:
                 self.player[0] += 1
         print("player now at: ", self.player)
-        self.display.set_pixel(self.player[0], self.player[1], testdisplay.to_rgb((0, 255, 0)))
+        self.display.set_pixel(self.player[0], self.player[1], to_rgb((0, 255, 0)))
         
     def change_direction(self, direction):
         if direction == "up":
@@ -351,7 +351,7 @@ class Maze(App):
             self.direction = "right"
 
 class Jump(App):
-    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+    def __init__(self, sio: socketio.Client, display: Display):
         super().__init__("Jump", sio, display)
         self.state = "start"
         self.direction = "level"
@@ -365,21 +365,21 @@ class Jump(App):
         if self.state == "start":
             for i in range(27):
                 for j in range(20):
-                    if j > self.ground_level: self.display.set_pixel(i, j, testdisplay.to_rgb((255, 255, 255)))
+                    if j > self.ground_level: self.display.set_pixel(i, j, to_rgb((255, 255, 255)))
             for obstacle in self.obstacles:
-                self.display.set_pixel(obstacle[0], obstacle[1], testdisplay.to_rgb((0, 0, 0)))
+                self.display.set_pixel(obstacle[0], obstacle[1], to_rgb((0, 0, 0)))
         
         for i in range(27):
             for j in range(self.ground_level + 1):
-                self.display.set_pixel(i, j, testdisplay.to_rgb((0, 0, 0)))
+                self.display.set_pixel(i, j, to_rgb((0, 0, 0)))
 
         for i, j in self.player:
-            self.display.set_pixel(i,j, testdisplay.to_rgb((0, 0, 255)))
+            self.display.set_pixel(i,j, to_rgb((0, 0, 255)))
 
         for i,j in self.obstacles:
-            self.display.set_pixel(i,j, testdisplay.to_rgb((255, 0, 0)))
+            self.display.set_pixel(i,j, to_rgb((255, 0, 0)))
 
-        self.display.update_frame()
+        self.display.display()
 
     def restart(self):
         self.state = "start"
@@ -459,7 +459,7 @@ class Jump(App):
             self.direction = "down"
             
 class BadApple(App):
-    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+    def __init__(self, sio: socketio.Client, display: Display):
         super().__init__("Bad Apple", sio, display)
         self.last_time = time.perf_counter()
         self.frames = pickle.load(open("badapple.pkl", "rb"))
@@ -468,12 +468,12 @@ class BadApple(App):
     def start_setup(self):
         self.frame = 0
         self.display.clear()
-        self.display.update_frame()
+        self.display.display()
 
     def restart(self):
         self.frame = 0
         self.display.clear()
-        self.display.update_frame()
+        self.display.display()
 
     def update(self, input: str):
         now = time.perf_counter()
@@ -484,8 +484,10 @@ class BadApple(App):
         frame = self.frames[self.frame]
         for i in range(27):
             for j in range(20):
-                self.display.set_pixel(i, j, testdisplay.to_rgb((frame[j][i][0], frame[j][i][1], frame[j][i][2])))
-        self.display.update_frame()
+                self.display.set_pixel(i, j, to_rgb((frame[j][i][0], frame[j][i][1], frame[j][i][2])))
+        self.display.display()
         self.frame += 1
+        if self.frame >= len(self.frames):
+            self.frame = len(self.frames) - 1
         
 

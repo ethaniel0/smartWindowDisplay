@@ -1,10 +1,11 @@
 import socketio
 import programs
 import testdisplay
+from general_display import Display
 from threading import Semaphore
 
 class ProgramManager:
-    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+    def __init__(self, sio: socketio.Client, display: Display):
         self.state = "main"
         self.sio = sio
         self.display = display
@@ -93,7 +94,7 @@ class ProgramManager:
                 self.display.clear()
 
             self.display.clear()
-            self.display.update_frame()
+            self.display.display()
             return
         
         if self.startup:

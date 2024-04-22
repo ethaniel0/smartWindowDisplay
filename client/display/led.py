@@ -2,9 +2,10 @@ import numpy as np
 import board
 import neopixel
 from map_pixels import PixelMapper
+from ..general_display import Display
 
 
-class LEDDisplay:
+class LEDDisplay(Display):
     """
     Displays pixel data on an LED strip
     """
@@ -28,6 +29,16 @@ class LEDDisplay:
         )
 
         self.pixels.fill((0, 0, 0))
+        self.digits = [[[1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]],
+                       [[0, 1, 0], [1, 1, 0], [0, 1, 0], [0, 1, 0], [1, 1, 1]],
+                       [[1, 1, 1], [0, 0, 1], [1, 1, 1], [1, 0, 0], [1, 1, 1]],
+                       [[1, 1, 1], [0, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]],
+                       [[1, 0, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [0, 0, 1]],
+                       [[1, 1, 1], [1, 0, 0], [1, 1, 1], [0, 0, 1], [1, 1, 1]],
+                       [[1, 1, 1], [1, 0, 0], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
+                       [[1, 1, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]],
+                       [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
+                       [[1, 1, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]]]
 
 
     def display(self, display: np.ndarray) -> None:
@@ -84,6 +95,22 @@ class LEDDisplay:
         :param color: The color to set
         """
         self.pixels.fill(color)
+    
+    def show_digit(self, num, color, x, y):
+        for i in range(5):
+            for j in range(3):
+                if self.digits[num][i][j] == 1:
+                    self.set_pixel(j + x, i + y, to_rgb(color))
+    
+        c = to_rgb(color)
+        for i in range(27 * 20):
+            self.pixels[i] = c
+    
+    def pane_digit(self, num, panex, paney, color):
+        for i in range(5):
+            for j in range(3):
+                if self.digits[num][i][j] == 1:
+                    self.set_pixel(j + 3*panex, i + 5*paney, to_rgb(color))
 
 
 

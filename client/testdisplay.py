@@ -1,12 +1,8 @@
 import tkinter as tk
 import random
+from general_display import Display, to_rgb
 
-def to_rgb(rgb):
-        """translates an rgb tuple of int to a tkinter friendly color code
-        """
-        return "#%02x%02x%02x" % rgb
-
-class TestDisplay(tk.Tk):
+class TestDisplay(tk.Tk, Display):
     def __init__(self):
         super().__init__()
         self.title("Test Display")
@@ -27,8 +23,8 @@ class TestDisplay(tk.Tk):
     def set_pixel(self, x, y, color):
         self.pixels[x + y*27] = color
     
-    def set_pixels(self, colors):
-        for i, color in enumerate(colors):
+    def set_pixels(self, colors, inds):
+        for i, color in zip(inds, colors):
             x = i % 27
             y = i // 27
             self.set_pixel(x, y, to_rgb(color))
@@ -63,7 +59,7 @@ class TestDisplay(tk.Tk):
         self.canvas.delete("all")
         self.set_all_pixels((0, 0, 0))
     
-    def update_frame(self):
+    def display(self):
         self.canvas.delete("all")
         for i in range(27):
             for j in range(20):
@@ -75,12 +71,12 @@ class TestDisplay(tk.Tk):
 if __name__ == "__main__":
     display = TestDisplay()
     display.set_all_pixels((255, 0, 0))
-    display.update_frame()
+    display.display()
     display.set_all_pixels((0, 255, 0))
-    display.update_frame()
+    display.display()
     display.set_all_pixels((0, 0, 255))
-    display.update_frame()
+    display.display()
     display.set_all_pixels((0, 0, 0))
-    display.update_frame()
+    display.display()
     display.set_pixel(0, 0, to_rgb((255, 255, 255)))
     display.mainloop()
