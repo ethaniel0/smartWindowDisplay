@@ -1,9 +1,9 @@
-import testdisplay
+from general_display import Display, to_rgb
 from PIL import Image
 from urllib import request
-import os
 import random
 import json
+import testdisplay
 
 def get_game(json_file = '../duke_scores/data.json'):
     # Returns info for games duke won
@@ -49,7 +49,7 @@ def place_img(f, img_size = (7, 7), offset = (9, 1)):
 
     for i in range(img_size[0]):
         for j in range(img_size[1]):
-            pixel = testdisplay.to_rgb(image.getpixel((i, j))[:3])
+            pixel = to_rgb(image.getpixel((i, j))[:3])
             display.set_pixel(i + offset_x, j + offset_y, pixel)
 
 def show_sport(display, sport):
@@ -67,9 +67,9 @@ def show_sport(display, sport):
         for i in range(9):
             for j in range(9):
                 if basketball[j][i] == 1:
-                    display.set_pixel(i + 9, j + 6, testdisplay.to_rgb((242, 134, 2)))
+                    display.set_pixel(i + 9, j + 6, to_rgb((242, 134, 2)))
                 elif basketball[j][i] == 2:
-                    display.set_pixel(i + 9, j + 6, testdisplay.to_rgb((50, 50, 50)))
+                    display.set_pixel(i + 9, j + 6, to_rgb((50, 50, 50)))
 
     elif "football" in sport:
         football = [[0, 0, 1, 1, 1, 1, 1, 0, 0],
@@ -84,7 +84,7 @@ def show_sport(display, sport):
         return
 
 
-def show_Duke_logo(display):
+def show_Duke_logo(display: Display):
     # Puts the Duke logo on the display: grid is 9x8
     offset_x, offset_y = 0, 1
 
@@ -100,7 +100,7 @@ def show_Duke_logo(display):
     for i in range(9):
         for j in range(8):
             if pixels[j][i] == 1:
-                display.set_pixel(i + offset_x, j + offset_y, testdisplay.to_rgb((0, 0, 255)))
+                display.set_pixel(i + offset_x, j + offset_y, to_rgb((0, 0, 255)))
 
 def place_url(display, url, img_size = (7, 7), offset = (9, 1)):
 
@@ -113,7 +113,7 @@ def place_url(display, url, img_size = (7, 7), offset = (9, 1)):
 
     for i in range(img_size[0]):
         for j in range(img_size[1]):
-            pixel = testdisplay.to_rgb(image.getpixel((i, j))[:3])
+            pixel = to_rgb(image.getpixel((i, j))[:3])
             display.set_pixel(i + offset_x, j + offset_y, pixel)
 
     # os.remove("temp.png")
@@ -149,7 +149,7 @@ def show_random_game(display):
     place_url(display, opponent_logo_url, img_size=(9, 9), offset = (9*2, 1))
     show_number(display, opponent_score, 2)
 
-    display.update_frame()
+    display.display()
 
 
 if __name__ == "__main__":
