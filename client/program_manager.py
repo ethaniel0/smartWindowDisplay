@@ -59,9 +59,7 @@ class ProgramManager:
             print('page not found')
             return ""
 
-        managerSem.acquire()
         self.state = page # setting current page
-        managerSem.release()
         self.state = page
         
         if isinstance(self.pages[page], programs.App): # if the page is a program

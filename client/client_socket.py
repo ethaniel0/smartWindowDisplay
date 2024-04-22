@@ -116,6 +116,7 @@ def main():
                 time.sleep(2)
         
         if display_numbers_flag:
+            piDisplay.clear()
             piDisplay.set_all_pixels((3, 42, 148))
             display_large_number(join_code[0], 1)
             display_large_number(join_code[1], 2)
