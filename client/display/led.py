@@ -1,8 +1,12 @@
+import sys
+sys.path.append("..")
+sys.path.append(".")
+
 import numpy as np
 import board
 import neopixel
-from map_pixels import PixelMapper
-from ..general_display import Display
+from map_pixels import PixelMapper # Need to remove the . if running this file on its own
+from general_display import Display
 
 
 class LEDDisplay(Display):
@@ -46,6 +50,8 @@ class LEDDisplay(Display):
         """
         self.pixels.show()
 
+    def fill_with_digits(x, y):
+        pass # TODO
 
     def display(self, display: np.ndarray) -> None:
         """
@@ -77,13 +83,16 @@ class LEDDisplay(Display):
         """
         self.pixels.brightness = brightness
 
-    def set_pixel(self, index: int, color: tuple) -> None:
+    def set_pixel(self, x: int, y: int, color: tuple) -> None:
         """
         Set the color of a single pixel
 
         :param index: The index of the pixel
         :param color: The color to set
         """
+        
+        index = self.pixel_mapper.get_index(x, y)
+
         self.pixels[index] = color
 
     def set_pixels(self, colors: list, indices: list) -> None:
@@ -122,7 +131,7 @@ class LEDDisplay(Display):
 
 
 if __name__ == "__main__":
-    ld = LEDDisplay(27, 20, start_bottom=False)
+    ld = LEDDisplay(27, 20, start_bottom=True)
 
     # Clear the display
     ld.clear()
@@ -132,12 +141,15 @@ if __name__ == "__main__":
     display = np.zeros((20, 27, 3))
 
     # Red rectangle around the outside
-    display[0, :, :] = [0, 255, 0]
+    display[0, :, :] = [0, 0, 255] # Set top to blue for calibration
     display[-1, :, :] = [0, 255, 0]
-    display[:, 0, :] = [0, 255, 0]
+    display[:, 0, :] = [255, 0, 0] # Set left to green
     display[:, -1, :] = [0, 255, 0]
 
     # Green rectangle in the middle
     display[5:15, 5:22, :] = [255, 0, 0]
+
+    # Set 0,0 pixel to white
+    display[0,0,:] = [255, 255, 255]
 
     ld.display(display)

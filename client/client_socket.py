@@ -7,13 +7,15 @@ import time
 import testdisplay
 from general_display import to_rgb, Display
 from threading import Semaphore
+from display.led import LEDDisplay
+
 
 #For connecting to the server:
 link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
 # link = 'http://localhost:3000/'
 # link = 'https://smartdormdisplay.fly.dev'
 sio = socketio.Client()
-piDisplay: Display = testdisplay.TestDisplay()
+piDisplay: Display = LEDDisplay(27, 20, True)
 
 manager = program_manager.ProgramManager(sio, piDisplay)
 join_code = [] 
@@ -104,8 +106,8 @@ def display_large_number(num, section):
 
 def main():
     global display_numbers_flag, join_code, press, gameCommand, static_screen
-    piDisplay.fill_with_digits((3,42,148))
-    piDisplay.display()
+    piDisplay.set_all_pixels((3,42,148))
+    piDisplay.show()
     while True:
         if not sio.connected:
             try: 
@@ -122,7 +124,7 @@ def main():
             display_large_number(join_code[0], 1)
             display_large_number(join_code[1], 2)
             display_large_number(join_code[2], 3)
-            piDisplay.display()
+            piDisplay.show()
             display_numbers_flag = False
         
         if sio.connected and connected_to_device_flag:

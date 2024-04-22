@@ -1,7 +1,7 @@
 import abc
 from abc import abstractmethod
 
-ON_DISPLAY = False
+ON_DISPLAY = True
 
 def to_rgb(rgb):
         """translates an rgb tuple of int to a tkinter friendly color code
