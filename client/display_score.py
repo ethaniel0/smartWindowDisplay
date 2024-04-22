@@ -116,7 +116,7 @@ def place_url(display, url, img_size = (7, 7), offset = (9, 1)):
             pixel = testdisplay.to_rgb(image.getpixel((i, j))[:3])
             display.set_pixel(i + offset_x, j + offset_y, pixel)
 
-    os.remove("temp.png")
+    # os.remove("temp.png")
     
 def show_number(display, num, window, color = (255, 0, 0)):
     offset_x = 9 * window
