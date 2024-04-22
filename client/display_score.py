@@ -124,6 +124,7 @@ def show_number(display, num, window, color = (255, 0, 0)):
     num_ones = num % 10
     num_tens = num // 10 % 10
     num_hundreds = num // 100
+
     if num_hundreds != 0:
         display.show_digit(num_hundreds, color, 0 + offset_x, y)
         display.show_digit(num_tens, color, 3 + offset_x, y)
@@ -145,7 +146,7 @@ def show_random_game(display):
 
     show_sport(display, sport)
 
-    place_url(display, opponent_logo_url, img_size=(9, 9), offset = (9*2 + 1, 1))
+    place_url(display, opponent_logo_url, img_size=(9, 9), offset = (9*2, 1))
     show_number(display, opponent_score, 2)
 
     display.update_frame()
