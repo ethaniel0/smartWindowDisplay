@@ -12,7 +12,8 @@ class ProgramManager:
         self.pages = {
             "main": ["Duke Game", "Weather", "Games"],
             "Games": ["Simon", "Snake", "Maze", "Jump", "BadApple"],
-            
+            "Duke Game": "Duke Game", 
+    
             "Simon": programs.Simon(sio, self.display),
             "Snake": programs.Snake(sio, self.display),
             "Maze": programs.Maze(sio, self.display),
@@ -55,13 +56,23 @@ class ProgramManager:
         
     def get_page(self, page) -> list | str:
         if page not in self.pages:
+            print('page not found')
             return ""
+
+        managerSem.acquire()
+        self.state = page # setting current page
+        managerSem.release()
         self.state = page
         
-        if isinstance(self.pages[page], programs.App):
+        if isinstance(self.pages[page], programs.App): # if the page is a program
             self.startup = True
             return page
         
+        #if the page is a string 
+        if isinstance(self.pages[page], str):
+            print("state is now: ", self.state)
+            return self.pages[page]
+                
         name_list = []
         for name in self.pages[page]:
             if isinstance(name, str):
@@ -70,6 +81,8 @@ class ProgramManager:
                 name_list.append(name.name)
         if page != 'main':
             name_list.append('Back')
+
+        print('returning: ', name_list)
         
         return name_list
 
@@ -79,6 +92,9 @@ class ProgramManager:
     
     def update_program(self):
         if not isinstance(self.pages[self.state], programs.App):
+            if self.state == "main":
+                self.display.clear()
+
             self.display.clear()
             self.display.update_frame()
             return

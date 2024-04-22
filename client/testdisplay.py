@@ -34,6 +34,14 @@ class TestDisplay(tk.Tk):
             self.set_pixel(x, y, to_rgb(color))
     
     def set_all_pixels(self, color):
+        self.canvas.create_rectangle(0, 0, 270, 200, fill=to_rgb(color))
+
+    def show_digit(self, num, color, x, y):
+        for i in range(5):
+            for j in range(3):
+                if self.digits[num][i][j] == 1:
+                    self.set_pixel(j + x, i + y, to_rgb(color))
+    
         c = to_rgb(color)
         for i in range(27 * 20):
             self.pixels[i] = c

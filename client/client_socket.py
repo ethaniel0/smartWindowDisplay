@@ -2,6 +2,7 @@ import socketio
 import time
 import random
 import program_manager
+import display_score
 import time
 import testdisplay
 from threading import Semaphore
@@ -22,6 +23,8 @@ globalSem = Semaphore()
 
 press = False
 gameCommand = False
+static_screen = False
+
 
 #Pi Messages:
 @sio.on('tryConnect')
@@ -143,6 +146,7 @@ def main():
                 
             manager.update_program()
             
+
 
 if __name__ == '__main__':
     main()

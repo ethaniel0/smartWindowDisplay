@@ -5,13 +5,7 @@ import os
 import random
 import json
 
-
-display = testdisplay.TestDisplay()
-
-json_file = '../duke_scores/data.json'
-
-
-def get_game():
+def get_game(json_file = '../duke_scores/data.json'):
     # Returns info for games duke won
     # sport, duke_score, opponent_score, opponent, opponent_logo_url
 
@@ -40,14 +34,11 @@ def get_game():
         if duke_score > opponent_score:
             break
 
-    # If Duke as somehow winless in the sport
-    if count >= 100:
-        return get_game()
+        # If Duke as somehow winless in the sport
+        if count >= 100:
+            return get_game()
 
     return sport, duke_score, opponent_score, data[sport]["opponents"][idx], data[sport]["logos"][idx]
-
-
-
 
 def place_img(f, img_size = (7, 7), offset = (9, 1)):
 
@@ -61,25 +52,57 @@ def place_img(f, img_size = (7, 7), offset = (9, 1)):
             pixel = testdisplay.to_rgb(image.getpixel((i, j))[:3])
             display.set_pixel(i + offset_x, j + offset_y, pixel)
 
-def place_w():
-    # Puts a green W on the display
+def show_sport(display, sport):
 
-    offset_x, offset_y = 10, 10
+    if "basketball" in sport:
+        basketball = [[0, 0, 1, 1, 2, 1, 1, 0, 0],
+                      [0, 2, 1, 1, 2, 1, 1, 2, 0],
+                      [1, 1, 2, 1, 2, 1, 2, 1, 1],
+                      [1, 1, 2, 1, 2, 1, 2, 1, 1],
+                      [1, 1, 2, 2, 2, 2, 2, 1, 1],
+                      [1, 1, 2, 1, 2, 1, 2, 1, 1],
+                      [1, 1, 2, 1, 2, 1, 2, 1, 1],
+                      [0, 2, 1, 1, 2, 1, 1, 2, 0],
+                      [0, 0, 1, 1, 2, 1, 1, 0, 0]]
+        for i in range(9):
+            for j in range(9):
+                if basketball[j][i] == 1:
+                    display.set_pixel(i + 9, j + 6, testdisplay.to_rgb((242, 134, 2)))
+                elif basketball[j][i] == 2:
+                    display.set_pixel(i + 9, j + 6, testdisplay.to_rgb((50, 50, 50)))
 
-    display.set_pixel(0 + offset_x, 2 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(0 + offset_x, 3 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(0 + offset_x, 4 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(1 + offset_x, 5 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(2 + offset_x, 6 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(3 + offset_x, 5 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(3 + offset_x, 4 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(4 + offset_x, 6 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(5 + offset_x, 5 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(6 + offset_x, 4 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(6 + offset_x, 3 + offset_y, testdisplay.to_rgb((0, 255, 0)))
-    display.set_pixel(6 + offset_x, 2 + offset_y, testdisplay.to_rgb((0, 255, 0)))
- 
-def place_url(url, img_size = (7, 7), offset = (9, 1)):
+    elif "football" in sport:
+        football = [[0, 0, 1, 1, 1, 1, 1, 0, 0],
+                    [0, 1, 1, 1, 1, 1, 1, 1, 0],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    [0, 1, 1, 1, 1, 1, 1, 1, 0],
+                    [0, 0, 1, 1, 1, 1, 1, 0, 0]]
+    else:
+        return
+
+
+def show_Duke_logo(display):
+    # Puts the Duke logo on the display: grid is 9x8
+    offset_x, offset_y = 0, 1
+
+    pixels = [[1, 1, 1, 1, 1, 1, 1, 0, 0],
+              [0, 1, 1, 1, 0, 1, 1, 1, 0],
+              [0, 1, 1, 1, 0, 1, 1, 1, 0],
+              [0, 1, 1, 1, 0, 1, 1, 1, 0],
+              [0, 1, 1, 1, 0, 1, 1, 1, 0],
+              [0, 1, 1, 1, 0, 1, 1, 1, 0],
+              [0, 1, 1, 1, 0, 1, 1, 1, 0],
+              [1, 1, 1, 1, 1, 1, 1, 0, 0]]
+
+    for i in range(9):
+        for j in range(8):
+            if pixels[j][i] == 1:
+                display.set_pixel(i + offset_x, j + offset_y, testdisplay.to_rgb((0, 0, 255)))
+
+def place_url(display, url, img_size = (7, 7), offset = (9, 1)):
 
     request.urlretrieve(url, "temp.png")
 
@@ -95,17 +118,43 @@ def place_url(url, img_size = (7, 7), offset = (9, 1)):
 
     os.remove("temp.png")
     
+def show_number(display, num, window, color = (255, 0, 0)):
+    offset_x = 9 * window
+    y = 12
+    num_ones = num % 10
+    num_tens = num // 10 % 10
+    num_hundreds = num // 100
+    if num_hundreds != 0:
+        display.show_digit(num_hundreds, color, 0 + offset_x, y)
+        display.show_digit(num_tens, color, 3 + offset_x, y)
+        display.show_digit(num_ones, color, 6 + offset_x, y)
+    elif num_tens != 0:
+        display.show_digit(num_tens, color, 1 + offset_x, y)
+        display.show_digit(num_ones, color, 5 + offset_x, y)
+    else:
+        display.show_digit(num_ones, color, 3 + offset_x, y)
 
-sport, duke_score, opponent_score, opponent, opponent_logo_url = get_game()
+def show_random_game(display):
+    json_file = '../duke_scores/data.json'
 
-print(f"Duke won a {sport} game against {opponent} with a score of {duke_score}-{opponent_score}")
+    sport, duke_score, opponent_score, opponent, opponent_logo_url = get_game(json_file)
+    print(f"Duke won a {sport} game against {opponent} with a score of {duke_score}-{opponent_score}")
 
-# place_img('img/balls/basketball.png', offset = (10, 1))
-# place_w()
+    show_Duke_logo(display)
+    show_number(display, duke_score, 0, color = (0, 0, 255))
 
-# place_img('img/logos/duke.png', img_size=(15, 15), offset = (1, 1))
-place_url(opponent_logo_url, img_size=(20, 20), offset = (0, 0))
+    show_sport(display, sport)
 
-display.mainloop()
+    place_url(display, opponent_logo_url, img_size=(9, 9), offset = (9*2 + 1, 1))
+    show_number(display, opponent_score, 2)
+
+    display.update_frame()
+
+
+if __name__ == "__main__":
+    display = testdisplay.TestDisplay()
+    json_file = '../duke_scores/data.json'
+    show_random_game(display)
+    display.mainloop()
 
 
