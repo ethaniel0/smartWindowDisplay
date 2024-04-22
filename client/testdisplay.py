@@ -39,10 +39,6 @@ class TestDisplay(tk.Tk, Display):
                 if self.digits[num][i][j] == 1:
                     self.set_pixel(j + x, i + y, to_rgb(color))
     
-        c = to_rgb(color)
-        for i in range(27 * 20):
-            self.pixels[i] = c
-    
     def pane_digit(self, num, panex, paney, color):
         for i in range(5):
             for j in range(3):

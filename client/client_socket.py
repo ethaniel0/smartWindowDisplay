@@ -8,8 +8,8 @@ import testdisplay
 from threading import Semaphore
 
 #For connecting to the server:
-# link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
-link = 'http://localhost:3000/'
+link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
+# link = 'http://localhost:3000/'
 # link = 'https://smartdormdisplay.fly.dev'
 sio = socketio.Client()
 piDisplay = testdisplay.TestDisplay()
@@ -102,7 +102,7 @@ def display_large_number(num, section):
     
 
 def main():
-    global display_numbers_flag, join_code, press, gameCommand
+    global display_numbers_flag, join_code, press, gameCommand, static_screen
     piDisplay.fill_with_digits((3,42,148))
     piDisplay.display()
     while True:
@@ -139,13 +139,22 @@ def main():
                     sio.emit('programList', options)
                 press = False
                 globalSem.release()
+
             elif gameCommand:
                 globalSem.acquire()
                 manager.get_command(gameCommand)
                 gameCommand = False
                 globalSem.release()
-                
-            manager.update_program()
+            
+            if manager.state == 'Duke Game' and not static_screen:
+                display_score.show_random_game(piDisplay)
+                static_screen = True
+
+            elif manager.state != 'Duke Game':
+                manager.update_program()
+
+            if manager.state == 'main':
+                static_screen = False
             
 
 

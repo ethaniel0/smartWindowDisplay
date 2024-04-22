@@ -25,7 +25,7 @@ class LEDDisplay(Display):
         self.num_pixels = num_strips * num_pixels_per_strip
 
         self.pixels = neopixel.NeoPixel(
-            pixel_pin, self.num_pixels, brightness=0.2, auto_write=True, pixel_order=neopixel.RGB
+            pixel_pin, self.num_pixels, brightness=0.2, auto_write=False, pixel_order=neopixel.RGB
         )
 
         self.pixels.fill((0, 0, 0))
@@ -40,6 +40,12 @@ class LEDDisplay(Display):
                        [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
                        [[1, 1, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]]]
 
+    def show(self) -> None:
+        """
+        Show the LED strip
+        """
+        self.pixels.show()
+
 
     def display(self, display: np.ndarray) -> None:
         """
@@ -50,7 +56,8 @@ class LEDDisplay(Display):
         pixels = self.pixel_mapper.map_pixels(display)
 
         for i, pixel in enumerate(pixels):
-            self.pixels[i] = tuple(pixel)
+            print(tuple(pixel))
+            self.pixels[i] = tuple(pixel.astype(int))
 
         print(type(self.pixels))
 
@@ -79,14 +86,14 @@ class LEDDisplay(Display):
         """
         self.pixels[index] = color
 
-    def set_pixels(self, colors: list) -> None:
+    def set_pixels(self, colors: list, indices: list) -> None:
         """
         Set the colors of multiple pixels
 
         :param colors: The colors to set
         """
-        for i, color in enumerate(colors):
-            self.pixels[i] = color
+        for index, color in zip(indices, colors):
+            self.pixels[index] = color
 
     def set_all_pixels(self, color: tuple) -> None:
         """
@@ -115,19 +122,22 @@ class LEDDisplay(Display):
 
 
 if __name__ == "__main__":
-    ld = LEDDisplay(3, 10, start_bottom=False)
+    ld = LEDDisplay(27, 20, start_bottom=False)
 
-    display = np.array([
-        [[1,  2,   3], [4,  5,   6], [7,  8,   9]],
-        [[10, 11, 12], [13, 14, 15], [16, 17, 18]],
-        [[19, 20, 21], [22, 23, 24], [25, 26, 27]],
-        [[28, 29, 30], [31, 32, 33], [34, 35, 36]],
-        [[37, 38, 39], [40, 41, 42], [43, 44, 45]],
-        [[46, 47, 48], [49, 50, 51], [52, 53, 54]],
-        [[55, 56, 57], [58, 59, 60], [61, 62, 63]],
-        [[64, 65, 66], [67, 68, 69], [70, 71, 72]],
-        [[73, 74, 75], [76, 77, 78], [79, 80, 81]],
-        [[82, 83, 84], [85, 86, 87], [88, 89, 90]]
-    ])
+    # Clear the display
+    ld.clear()
+
+    ld.show()
+
+    display = np.zeros((20, 27, 3))
+
+    # Red rectangle around the outside
+    display[0, :, :] = [0, 255, 0]
+    display[-1, :, :] = [0, 255, 0]
+    display[:, 0, :] = [0, 255, 0]
+    display[:, -1, :] = [0, 255, 0]
+
+    # Green rectangle in the middle
+    display[5:15, 5:22, :] = [255, 0, 0]
 
     ld.display(display)
