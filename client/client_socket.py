@@ -2,6 +2,7 @@ import socketio
 import time
 import random
 import program_manager
+import display_score
 import time
 import testdisplay
 
@@ -16,6 +17,8 @@ manager = program_manager.ProgramManager(sio, piDisplay)
 join_code = [] 
 display_numbers_flag = False
 connected_to_device_flag = False
+static_screen = False
+
 
 #Pi Messages:
 @sio.on('tryConnect')
@@ -120,7 +123,17 @@ def main():
         
         if (time.perf_counter() - last_time) > update_frequency and sio.connected and connected_to_device_flag:
             last_time = time.perf_counter()
-            manager.update_program()
+            if manager.state == 'Duke Game' and not static_screen:
+                static_screen = True
+                print ('Displaying Duke Game')
+                display_score.show_random_game(piDisplay)
+            else:
+                if manager.state == 'main': 
+                    static_screen = False
+                    
+                if not static_screen:
+                    manager.update_program()
+
 
 if __name__ == '__main__':
     main()

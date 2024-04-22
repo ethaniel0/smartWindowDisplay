@@ -5,13 +5,7 @@ import os
 import random
 import json
 
-
-display = testdisplay.TestDisplay()
-
-json_file = '../duke_scores/data.json'
-
-
-def get_game():
+def get_game(json_file = '../duke_scores/data.json'):
     # Returns info for games duke won
     # sport, duke_score, opponent_score, opponent, opponent_logo_url
 
@@ -58,7 +52,7 @@ def place_img(f, img_size = (7, 7), offset = (9, 1)):
             pixel = testdisplay.to_rgb(image.getpixel((i, j))[:3])
             display.set_pixel(i + offset_x, j + offset_y, pixel)
 
-def show_sport(sport):
+def show_sport(display, sport):
 
     if "basketball" in sport:
         basketball = [[0, 0, 1, 1, 2, 1, 1, 0, 0],
@@ -90,7 +84,7 @@ def show_sport(sport):
         return
 
 
-def show_Duke_logo():
+def show_Duke_logo(display):
     # Puts the Duke logo on the display: grid is 9x8
     offset_x, offset_y = 0, 1
 
@@ -108,7 +102,7 @@ def show_Duke_logo():
             if pixels[j][i] == 1:
                 display.set_pixel(i + offset_x, j + offset_y, testdisplay.to_rgb((0, 0, 255)))
 
-def place_url(url, img_size = (7, 7), offset = (9, 1)):
+def place_url(display, url, img_size = (7, 7), offset = (9, 1)):
 
     request.urlretrieve(url, "temp.png")
 
@@ -124,7 +118,7 @@ def place_url(url, img_size = (7, 7), offset = (9, 1)):
 
     os.remove("temp.png")
     
-def show_number(num, window, color = (255, 0, 0)):
+def show_number(display, num, window, color = (255, 0, 0)):
     offset_x = 9 * window
     y = 12
     num_ones = num % 10
@@ -140,23 +134,27 @@ def show_number(num, window, color = (255, 0, 0)):
     else:
         display.show_digit(num_ones, color, 3 + offset_x, y)
 
-def show_random_game():
-    sport, duke_score, opponent_score, opponent, opponent_logo_url = get_game()
+def show_random_game(display):
+    json_file = '../duke_scores/data.json'
+
+    sport, duke_score, opponent_score, opponent, opponent_logo_url = get_game(json_file)
     print(f"Duke won a {sport} game against {opponent} with a score of {duke_score}-{opponent_score}")
 
-    show_Duke_logo()
-    show_number(duke_score, 0, color = (0, 0, 255))
+    show_Duke_logo(display)
+    show_number(display, duke_score, 0, color = (0, 0, 255))
 
-    show_sport(sport)
+    show_sport(display, sport)
 
-    place_url(opponent_logo_url, img_size=(9, 9), offset = (9*2 + 1, 1))
-    show_number(opponent_score, 2)
+    place_url(display, opponent_logo_url, img_size=(9, 9), offset = (9*2 + 1, 1))
+    show_number(display, opponent_score, 2)
 
     display.update_frame()
 
 
 if __name__ == "__main__":
-    show_random_game()
+    display = testdisplay.TestDisplay()
+    json_file = '../duke_scores/data.json'
+    show_random_game(display)
     display.mainloop()
 
 
