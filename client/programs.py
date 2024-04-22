@@ -478,9 +478,8 @@ class BadApple(App):
     def update(self, input: str):
         now = time.perf_counter()
         # 30 frames per second
-        if now - self.last_time < 1/20:
+        if now - self.last_time < 1/30:
             return
-        print(now - self.last_time)
         self.last_time = now
         frame = self.frames[self.frame]
         for i in range(27):
