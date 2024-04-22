@@ -353,7 +353,6 @@ class Jump(App):
     def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
         super().__init__("Jump", sio, display)
         self.state = "start"
-        self.options = ['up', 'down']
         self.direction = "level"
         self.score = 0
         self.ground_level = 10
@@ -410,18 +409,20 @@ class Jump(App):
                     self.restart()
 
     def generate_obstacles(self, time_per_move = 1):
-        if self.last_time + time_per_move > time.perf_counter(): # 1 second per move
+        if self.last_time + time_per_move > time.perf_counter():
             return
         
         #shift obstacles to the left
         for obstacle in self.obstacles:
             obstacle[0] -= 1
         #remove obstacles that are off the screen
-        if self.obstacles and self.obstacles[0][0] < 0:
+        if self.obstacles and self.obstacles[0][0] <= 0:
             self.score += 1
-        self.obstacles = [obstacle for obstacle in self.obstacles if obstacle[0] > 0]
+            
+        if len(self.obstacles) > 0 and self.obstacles[0][0] <= 0:
+            self.obstacles.pop(0)
         #randomly generate obstacles
-        if random.random() < 0.3 and (self.obstacles == [] or self.obstacles[-1][0] < 25):
+        if random.random() < 0.3 and (len(self.obstacles) == 0 or self.obstacles[-1][0] < 24):
             if random.random() < 0.5:
                 self.obstacles.append([26, self.ground_level]) #low obstacle
             else:
@@ -455,3 +456,4 @@ class Jump(App):
             self.direction = "up"
         elif direction == "down":
             self.direction = "down"
+            
