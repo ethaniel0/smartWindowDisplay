@@ -11,15 +11,16 @@ class ProgramManager:
         self.display = display
 
         self.pages = {
-            "main": ["Duke Game", "Weather", "Games"],
+            "main": ["Duke Game", "Weather", "Games", "Surprise"],
             "Games": ["Simon", "Snake", "Maze", "Jump", "BadApple"],
             "Duke Game": "Duke Game", 
     
+            "Surprise": programs.VideoDisplay("Surprise", "rick.pkl", sio, self.display),
             "Simon": programs.Simon(sio, self.display),
             "Snake": programs.Snake(sio, self.display),
             "Maze": programs.Maze(sio, self.display),
             "Jump": programs.Jump(sio, self.display),
-            "BadApple": programs.BadApple(sio, self.display),
+            "BadApple": programs.VideoDisplay("Bad Apple", "badapple.pkl", sio, self.display),
         }
         
         self.last_input = ""

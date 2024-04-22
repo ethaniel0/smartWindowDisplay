@@ -458,17 +458,12 @@ class Jump(App):
         elif direction == "down":
             self.direction = "down"
             
-class BadApple(App):
-    def __init__(self, sio: socketio.Client, display: Display):
-        super().__init__("Bad Apple", sio, display)
+class VideoDisplay(App):
+    def __init__(self, name, file, sio: socketio.Client, display: Display):
+        super().__init__(name, sio, display)
         self.last_time = time.perf_counter()
-        self.frames = pickle.load(open("badapple.pkl", "rb"))
+        self.frames = pickle.load(open(file, "rb"))
         self.frame = 0
-
-    def start_setup(self):
-        self.frame = 0
-        self.display.clear()
-        self.display.display()
 
     def restart(self):
         self.frame = 0
