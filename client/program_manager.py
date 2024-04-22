@@ -60,7 +60,6 @@ class ProgramManager:
             return ""
 
         self.state = page # setting current page
-        self.state = page
         
         if isinstance(self.pages[page], programs.App): # if the page is a program
             self.startup = True
