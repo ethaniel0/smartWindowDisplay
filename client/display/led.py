@@ -5,7 +5,7 @@ sys.path.append(".")
 import numpy as np
 import board
 import neopixel
-from map_pixels import PixelMapper # Need to remove the . if running this file on its own
+from .map_pixels import PixelMapper # Need to remove the . if running this file on its own
 from general_display import Display
 
 
