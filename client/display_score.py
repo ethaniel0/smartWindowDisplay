@@ -12,16 +12,20 @@ def get_game(json_file = '../duke_scores/data.json'):
     with open(json_file) as f:
         data = json.load(f)
 
-    sport = random.choice(list(data.keys()))
+    sport = None
+
+    while sport is None or len(data[sport]["scores"]) == 0:
+        sport = random.choice(list(data.keys()))
 
     # Get how many games are in the sport
     num_games = len(data[sport])
 
-    # Get a random game (keep going until we find a game duke won)
     # Do at most 100 iterations
     count = 0
     idx = 0
+
     while count < 100:
+        count += 1
         idx = random.randint(0, num_games - 1)
         # Check that Duke won by indexing into the "scores" list within the sport
         if len(data[sport]["scores"]) <= idx:
