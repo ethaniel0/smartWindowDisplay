@@ -12,9 +12,7 @@ class TestDisplay(tk.Tk):
         self.title("Test Display")
         self.geometry("270x200")
         self.canvas = tk.Canvas(self, width=270, height=200)
-        for i in range(27):
-            for j in range(20):
-                self.set_pixel(i, j, to_rgb((0, 0, 0)))
+        self.pixels = [to_rgb((0, 0, 0))] * (27*20)
         self.digits = [[[1, 1, 1], [1, 0, 1], [1, 0, 1], [1, 0, 1], [1, 1, 1]],
                        [[0, 1, 0], [1, 1, 0], [0, 1, 0], [0, 1, 0], [1, 1, 1]],
                        [[1, 1, 1], [0, 0, 1], [1, 1, 1], [1, 0, 0], [1, 1, 1]],
@@ -25,10 +23,9 @@ class TestDisplay(tk.Tk):
                        [[1, 1, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1]],
                        [[1, 1, 1], [1, 0, 1], [1, 1, 1], [1, 0, 1], [1, 1, 1]],
                        [[1, 1, 1], [1, 0, 1], [1, 1, 1], [0, 0, 1], [1, 1, 1]]]
-    
+        
     def set_pixel(self, x, y, color):
-        self.canvas.create_rectangle(x*10, y*10, x*10+10, y*10+10, fill=color, outline="")
-        self.canvas.pack()
+        self.pixels[x + y*27] = color
     
     def set_pixels(self, colors):
         for i, color in enumerate(colors):
@@ -37,7 +34,9 @@ class TestDisplay(tk.Tk):
             self.set_pixel(x, y, to_rgb(color))
     
     def set_all_pixels(self, color):
-        self.canvas.create_rectangle(0, 0, 270, 200, fill=to_rgb(color))
+        c = to_rgb(color)
+        for i in range(27 * 20):
+            self.pixels[i] = c
     
     def pane_digit(self, num, panex, paney, color):
         for i in range(5):
@@ -52,9 +51,15 @@ class TestDisplay(tk.Tk):
                 self.pane_digit(num, i, j, color)
     
     def clear(self):
+        self.canvas.delete("all")
         self.set_all_pixels((0, 0, 0))
     
     def update_frame(self):
+        self.canvas.delete("all")
+        for i in range(27):
+            for j in range(20):
+                self.canvas.create_rectangle(i*10, j*10, i*10+10, j*10+10, fill=self.pixels[i + j*27], outline="")
+        self.canvas.pack()
         self.update_idletasks()
         self.update()
 

@@ -10,8 +10,7 @@ socket.on("tryConnect", (msg) => {
       let inputElement = document.createElement("input");
       inputElement.id = "joinCode";
       inputElement.placeholder = "Join Code";
-      inputElement.onchange = () =>
-        socket.emit("joinCode", inputElement.value);
+      inputElement.onchange = () => socket.emit("joinCode", inputElement.value);
       document.body.appendChild(inputElement);
     } else {
       document.getElementById("joinCode").value = "";
@@ -25,6 +24,7 @@ socket.on("tryConnect", (msg) => {
 socket.on("programList", (list) => {
   let buttons = document.getElementById("buttons");
   clearButtons();
+  clearGameScreens();
   console.log(list, typeof list);
   if (typeof list == "string") {
     showGameScreen(list);
@@ -66,6 +66,11 @@ socket.on("piJoined", () => {
   document.getElementById("error-msg").innerHTML = "";
 });
 
+socket.on("youLost", (msg) => {
+  console.log("You lost");
+  startButton();
+});
+
 function connect() {
   console.log("trying to connect over here");
   socket.emit("tryConnect");
@@ -76,43 +81,40 @@ function clearButtons() {
   buttons.innerHTML = "";
 }
 
-function goBack(){
-  socket.emit('press', 'Back');
-  clearGameScreens();
+function goBack() {
+  socket.emit("press", "Back");
 }
 
-function sendGameCommand(msg){
+function sendGameCommand(msg) {
   socket.emit("gameCommand", msg);
 }
 
-function showGameScreen(game){
-  let simon = document.getElementById('simon');
-  let general = document.getElementById('general-game');
-  let jump = document.getElementById('jump');
+function showGameScreen(game) {
+  let simon = document.getElementById("simon");
+  let general = document.getElementById("general-game");
+  let jump = document.getElementById("jump");
 
   clearGameScreens();
 
-  if (game == 'Simon') simon.classList.remove('hidden');
-  else if (game == 'Jump') jump.classList.remove('hidden');
-  else general.classList.remove('hidden');
+  if (game == "Simon") simon.classList.remove("hidden");
+  else if (game == "Jump") jump.classList.remove("hidden");
+  else general.classList.remove("hidden");
 
-  let needStarts = [
-    'Simon', 'Jump'
-  ]
+  let needStarts = ["Simon", "Jump"];
 
-  if (needStarts.includes(game)){
+  if (needStarts.includes(game)) {
     startButton();
   }
 }
 
-function clearGameScreens(){
-  let simon = document.getElementById('simon');
-  let general = document.getElementById('general-game');
-  let jump = document.getElementById('jump');
+function clearGameScreens() {
+  let simon = document.getElementById("simon");
+  let general = document.getElementById("general-game");
+  let jump = document.getElementById("jump");
 
-  simon.classList.add('hidden');
-  general.classList.add('hidden');
-  jump.classList.add('hidden');
+  simon.classList.add("hidden");
+  general.classList.add("hidden");
+  jump.classList.add("hidden");
 }
 
 function simonButtons() {
@@ -154,7 +156,7 @@ function gamepad(leftright = true) {
 function startButton() {
   let startButton = document.createElement("button");
   startButton.innerHTML = "Start";
-  startButton.style.marginTop = '2rem';
+  startButton.style.marginTop = "2rem";
   startButton.onclick = () => {
     socket.emit("gameCommand", "start");
     startButton.remove();

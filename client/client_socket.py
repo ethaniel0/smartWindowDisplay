@@ -4,10 +4,11 @@ import random
 import program_manager
 import time
 import testdisplay
+from threading import Semaphore
 
 #For connecting to the server:
-link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
-# link = 'http://localhost:3000/'
+# link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
+link = 'http://localhost:3000/'
 # link = 'https://smartdormdisplay.fly.dev'
 sio = socketio.Client()
 piDisplay = testdisplay.TestDisplay()
@@ -16,6 +17,11 @@ manager = program_manager.ProgramManager(sio, piDisplay)
 join_code = [] 
 display_numbers_flag = False
 connected_to_device_flag = False
+
+globalSem = Semaphore()
+
+press = False
+gameCommand = False
 
 #Pi Messages:
 @sio.on('tryConnect')
@@ -51,20 +57,19 @@ def on_user_gone():
         
 @sio.on('press')
 def press_item(data):
-    print('Pressed: ', data)
-    if data == 'Back':
-        options = manager.go_one_page_up()
-        sio.emit('programList', options)
-    else:
-        options = manager.get_page(data)
-        if options == '':
-            sio.emit('programList', ['Back'])
-        sio.emit('programList', options)
+    global press
+    globalSem.acquire()
+    press = data
+    globalSem.release()
 
 @sio.on('gameCommand')
 def game_command(data):
+    global gameCommand
+    globalSem.acquire()
+    gameCommand = data
+    globalSem.release()
     print('Command: ', data)
-    manager.get_command(data)
+    # manager.get_command(data)
             
 #on disconnect
 @sio.event
@@ -94,10 +99,7 @@ def display_large_number(num, section):
     
 
 def main():
-    global last_command, display_numbers_flag, join_code
-    last_time = time.time()
-    update_frequency = 1/30
-    last_time = time.perf_counter()
+    global display_numbers_flag, join_code, press, gameCommand
     piDisplay.fill_with_digits((3,42,148))
     piDisplay.update_frame()
     while True:
@@ -118,9 +120,29 @@ def main():
             piDisplay.update_frame()
             display_numbers_flag = False
         
-        if (time.perf_counter() - last_time) > update_frequency and sio.connected and connected_to_device_flag:
-            last_time = time.perf_counter()
+        if sio.connected and connected_to_device_flag:
+            
+            if press:
+                globalSem.acquire()
+                print("Press: ", press)
+                if press == 'Back':
+                    options = manager.go_one_page_up()
+                    sio.emit('programList', options)
+                else:
+                    options = manager.get_page(press)
+                    if options == '':
+                        sio.emit('programList', ['Back'])
+                    sio.emit('programList', options)
+                press = False
+                globalSem.release()
+            elif gameCommand:
+                globalSem.acquire()
+                manager.get_command(gameCommand)
+                gameCommand = False
+                globalSem.release()
+                
             manager.update_program()
+            
 
 if __name__ == '__main__':
     main()

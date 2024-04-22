@@ -2,7 +2,6 @@ import socketio
 import programs
 import testdisplay
 from threading import Semaphore
-managerSem = Semaphore()
 
 class ProgramManager:
     def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
@@ -12,12 +11,13 @@ class ProgramManager:
 
         self.pages = {
             "main": ["Duke Game", "Weather", "Games"],
-            "Games": ["Simon", "Snake", "Maze", "Jump"],
+            "Games": ["Simon", "Snake", "Maze", "Jump", "BadApple"],
             
             "Simon": programs.Simon(sio, self.display),
             "Snake": programs.Snake(sio, self.display),
             "Maze": programs.Maze(sio, self.display),
             "Jump": programs.Jump(sio, self.display),
+            "BadApple": programs.BadApple(sio, self.display),
         }
         
         self.last_input = ""
@@ -25,7 +25,7 @@ class ProgramManager:
         
     
     def go_one_page_up(self):
-        managerSem.acquire()
+        print("going one page up")
         if self.state == "main":
             self.state = "main"
         
@@ -43,8 +43,6 @@ class ProgramManager:
             if found:
                 break  
         
-        managerSem.release()
-        
         name_list = []
         for name in self.pages[self.state]:
             if isinstance(name, str):
@@ -58,10 +56,7 @@ class ProgramManager:
     def get_page(self, page) -> list | str:
         if page not in self.pages:
             return ""
-
-        managerSem.acquire()
         self.state = page
-        managerSem.release()
         
         if isinstance(self.pages[page], programs.App):
             self.startup = True
@@ -80,9 +75,7 @@ class ProgramManager:
 
     def get_command(self, command):
         print('setting command: ', command)
-        managerSem.acquire()
         self.last_input = command
-        managerSem.release()
     
     def update_program(self):
         if not isinstance(self.pages[self.state], programs.App):
@@ -90,13 +83,11 @@ class ProgramManager:
             self.display.update_frame()
             return
         
-        managerSem.acquire()
         if self.startup:
             self.pages[self.state].restart()
             self.startup = False
         self.pages[self.state].update(self.last_input)
         self.last_input = ""
-        managerSem.release()
     
 
     

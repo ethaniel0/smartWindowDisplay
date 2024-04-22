@@ -6,6 +6,7 @@ import testdisplay
 import time
 from random import choice
 import numpy as np
+import pickle
 
 class App(abc.ABC):
     def __init__(self, name: str, sio: socketio.Client, display: testdisplay.TestDisplay):
@@ -457,3 +458,35 @@ class Jump(App):
         elif direction == "down":
             self.direction = "down"
             
+class BadApple(App):
+    def __init__(self, sio: socketio.Client, display: testdisplay.TestDisplay):
+        super().__init__("Bad Apple", sio, display)
+        self.last_time = time.perf_counter()
+        self.frames = pickle.load(open("badapple.pkl", "rb"))
+        self.frame = 0
+
+    def start_setup(self):
+        self.frame = 0
+        self.display.clear()
+        self.display.update_frame()
+
+    def restart(self):
+        self.frame = 0
+        self.display.clear()
+        self.display.update_frame()
+
+    def update(self, input: str):
+        now = time.perf_counter()
+        # 30 frames per second
+        if now - self.last_time < 1/20:
+            return
+        print(now - self.last_time)
+        self.last_time = now
+        frame = self.frames[self.frame]
+        for i in range(27):
+            for j in range(20):
+                self.display.set_pixel(i, j, testdisplay.to_rgb((frame[j][i][0], frame[j][i][1], frame[j][i][2])))
+        self.display.update_frame()
+        self.frame += 1
+        
+

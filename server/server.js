@@ -93,6 +93,14 @@ io.on("connection", (socket) => {
     io.to("user").emit("programList", msg);
   });
 
+  socket.on("youLost", (msg) => {
+    if (piSocket && socket.id != piSocket.id) return;
+    if (!userSocket) return;
+    
+    console.log("You lost");
+    io.to("user").emit("youLost", msg);
+  });
+
   socket.on("disconnect", () => {
     if (piSocket && socket.id == piSocket.id) {
       piSocket = null;
@@ -101,13 +109,13 @@ io.on("connection", (socket) => {
       userSocket = null; //must reenter code to become user
     } else if (userSocket && socket.id == userSocket.id) {
       userSocket = null;
-      if (piSocket){
-        io.to('pi').emit('userGone');
+      if (piSocket) {
+        io.to("pi").emit("userGone");
       }
     }
   });
 });
 
-server.listen(port, '0.0.0.0', () => {
+server.listen(port, () => {
   console.log(`Example app listening on port http://localhost:${port}`);
 });
