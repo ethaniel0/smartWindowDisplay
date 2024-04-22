@@ -3,127 +3,87 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Test Environment</title>
-    <style>
-      #buttons {
-        display: flex;
-        flex-direction: column;
-      }
-      .error {
-        color: red;
-      }
-    </style>
+    <title>Smart Dorm Display</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="style.css">
+    
   </head>
+  
   <body>
-    <button id="connect-btn" onClick="connect()">Connect</button>
-    <span id="error-msg" class="error"></span>
+    <div id="connect" class="">
+      <button id="connect-btn" onClick="connect()">Connect</button>
+      <span id="error-msg" class="error"></span>
+    </div>
+    
+    <div id="simon" class="hidden">
+      <button class="game-back" onclick="goBack()">Back</button>
+      <div id='simon-gamepad'>
+        <div class='grid-four'>
+          <button class="green" onclick="sendGameCommand('green')"></button>
+          <button class="red" onclick="sendGameCommand('red')"></button>
+          <button class="yellow" onclick="sendGameCommand('yellow')"></button>
+          <button class="blue" onclick="sendGameCommand('blue')"></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="general-game" class="hidden">
+      <button class="game-back" onclick="goBack()">Back</button>
+    
+      <div id="general-gamepad">
+        <div class="udlr-gamepad">
+          <div></div>
+          <button 
+            class="up" 
+            onclick="sendGameCommand('up')">
+              <img src="/assets/up.svg" alt="">
+          </button>
+          <div></div>
+          
+          <button 
+            class="left" 
+            onclick="sendGameCommand('left')">
+              <img src="/assets/left.svg" alt="">
+          </button>
+          <button 
+            class="down" 
+            onclick="sendGameCommand('down')">
+              <img src="/assets/down.svg" alt="">
+          </button>
+          <button 
+            class="right" 
+            onclick="sendGameCommand('right')">
+              <img src="/assets/right.svg" alt="">
+          </button>
+  
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="jump" class="hidden">
+      <button class="game-back" onclick="goBack()">Back</button>
+      <div id='jump-gamepad'>
+        <button 
+          class="up" 
+          onclick="sendGameCommand('up')">
+            <img src="/assets/up.svg" alt="">
+        </button>
+        <button 
+          class="down" 
+          onclick="sendGameCommand('down')">
+            <img src="/assets/down.svg" alt="">
+        </button>
+      </div>
+    </div>
 
     <div id="buttons"></div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io();
-      socket.on("message", function (data) {
-        console.log(data);
-      });
-
-      socket.on("tryConnect", (msg) => {
-        if (msg == "received") {
-          document.getElementById("error-msg").innerHTML = "";
-          if (!document.getElementById("joinCode")) {
-            let inputElement = document.createElement("input");
-            inputElement.id = "joinCode";
-            inputElement.placeholder = "Join Code";
-            inputElement.onchange = () =>
-              socket.emit("joinCode", inputElement.value);
-            document.body.appendChild(inputElement);
-          } else {
-            document.getElementById("joinCode").value = "";
-            document.getElementById("joinCode").style.backgroundColor = "white";
-          }
-        } else {
-          document.getElementById("error-msg").innerHTML = msg;
-        }
-      });
-
-      socket.on("programList", (list) => {
-        let buttons = document.getElementById("buttons");
-        clearButtons();
-        console.log(list, typeof list);
-        if (typeof list == "string") {
-          let backButton = document.createElement("button");
-          backButton.innerHTML = "Back";
-          backButton.onclick = () => socket.emit("press", "Back");
-          buttons.appendChild(backButton);
-          if (list == "Simon") {
-            simonButtons();
-          } else if (list == "Snake" || list == "Maze") {
-            gamepad();
-          }
-          return;
-        }
-
-        console.log("program list", list);
-        for (let i = 0; i < list.length; i++) {
-          let button = document.createElement("button");
-          button.innerHTML = list[i];
-          button.onclick = () => socket.emit("press", list[i]);
-          buttons.appendChild(button);
-        }
-      });
-
-      socket.on("joinCode", (msg) => {
-        if (msg == "success") {
-          let connectBtn = document.getElementById("connect-btn");
-          let code_input = document.getElementById("joinCode");
-          connectBtn.remove();
-          code_input.remove();
-        }
-      });
-
-      function connect() {
-        console.log("trying to connect over here");
-        socket.emit("tryConnect");
-      }
-
-      function clearButtons() {
-        let buttons = document.getElementById("buttons");
-        buttons.innerHTML = "";
-      }
-
-      function simonButtons() {
-        let colors = ["Red", "Green", "Blue", "Yellow"];
-        for (let i = 0; i < colors.length; i++) {
-          let button = document.createElement("button");
-          button.innerHTML = colors[i];
-          button.style.backgroundColor = colors[i];
-          button.onclick = () => socket.emit("gameCommand", colors[i]);
-          buttons.appendChild(button);
-        }
-      }
-
-      function gamepad() {
-        let buttons = document.getElementById("buttons");
-        let up = document.createElement("button");
-        up.innerHTML = "Up";
-        up.onclick = () => socket.emit("gameCommand", "up");
-        buttons.appendChild(up);
-
-        let down = document.createElement("button");
-        down.innerHTML = "Down";
-        down.onclick = () => socket.emit("gameCommand", "down");
-        buttons.appendChild(down);
-
-        let left = document.createElement("button");
-        left.innerHTML = "Left";
-        left.onclick = () => socket.emit("gameCommand", "left");
-        buttons.appendChild(left);
-
-        let right = document.createElement("button");
-        right.innerHTML = "Right";
-        right.onclick = () => socket.emit("gameCommand", "right");
-        buttons.appendChild(right);
-      }
-    </script>
+    <script src="script.js"></script>
   </body>
 </html>

@@ -1,0 +1,157 @@
+.hidden {
+  display: none !important;
+}
+.error {
+  color: red;
+}
+
+button {
+  -webkit-appearance: none;
+}
+
+#buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+
+#connect-btn {
+  -webkit-appearance: none;
+}
+
+/* SIMON GAMEPAD */
+
+#simon-gamepad, #general-gamepad{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  touch-action: manipulation;
+}
+
+#simon-gamepad .grid-four {
+  display: inline-grid;
+  width: 50%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.1rem;
+  background: black;
+  border: 5px solid black;
+}
+#simon-gamepad .grid-four button {
+  border: none;
+}
+#simon-gamepad .grid-four button.red {
+  background: red;
+}
+#simon-gamepad .grid-four button.green {
+  background: green;
+}
+#simon-gamepad .grid-four button.yellow {
+  background: yellow;
+}
+#simon-gamepad .grid-four button.blue {
+  background: blue;
+}
+
+/* UP/DOWN/LEFT/RIGHT GAMEPAD */
+
+#general-gamepad .udlr-gamepad {
+  display: grid;
+  width: 50%;
+  aspect-ratio: 1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.1rem;
+}
+
+#general-gamepad .udlr-gamepad div,
+#general-gamepad .udlr-gamepad button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  border: none;
+}
+
+#general-gamepad .udlr-gamepad button img{
+  height: 50%;
+}
+
+#general-gamepad .udlr-gamepad .up, 
+#general-gamepad .udlr-gamepad .down, #general-gamepad .udlr-gamepad .right,
+#general-gamepad .udlr-gamepad .left {
+  border: 4px solid black;
+}
+
+#jump-gamepad {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  touch-action: manipulation;
+}
+
+#jump-gamepad button{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 4rem;
+  height: 4rem;
+  background: none;
+  border: 5px solid black;
+}
+
+#jump-gamepad button img{
+  height: 2rem;
+}
+
+@media (max-width: 768px){
+  #connect-btn {
+    display: block;
+    font-size: 1.5rem;
+    width: 100%;
+    padding: 2rem 2rem;
+  }
+  #joinCode {
+    font-size: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+  }
+  #buttons button {
+    display: inline-block;
+    width: 90%;
+    padding: 1rem 1.5rem;
+    color: black;
+    font-size: 1.5rem;
+    border-radius: 0.5rem; 
+  }
+
+  .game-back {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    color: black;
+    border-radius: 0.25rem;
+  }
+  
+
+  #general-gamepad .udlr-gamepad {
+    margin-top: 5rem;
+    width: 75%;
+  }
+  #general-gamepad .udlr-gamepad button img{
+    height: 4rem;
+  }
+
+  #general-gamepad .udlr-gamepad .up, 
+  #general-gamepad .udlr-gamepad .down, #general-gamepad .udlr-gamepad .right,
+  #general-gamepad .udlr-gamepad .left {
+    border: 4px solid black;
+  }
+}
