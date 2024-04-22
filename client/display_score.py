@@ -93,7 +93,7 @@ def place_url(url, img_size = (7, 7), offset = (9, 1)):
             pixel = testdisplay.to_rgb(image.getpixel((i, j))[:3])
             display.set_pixel(i + offset_x, j + offset_y, pixel)
 
-    os.remove("temp.png")
+    # os.remove("temp.png")
     
 
 sport, duke_score, opponent_score, opponent, opponent_logo_url = get_game()
