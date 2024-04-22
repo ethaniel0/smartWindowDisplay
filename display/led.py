@@ -75,14 +75,14 @@ class LEDDisplay:
         """
         self.pixels[index] = color
 
-    def set_pixels(self, colors: list) -> None:
+    def set_pixels(self, colors: list, indices: list) -> None:
         """
         Set the colors of multiple pixels
 
         :param colors: The colors to set
         """
-        for i, color in enumerate(colors):
-            self.pixels[i] = color
+        for index, color in zip(indices, colors):
+            self.pixels[index] = color
 
     def set_all_pixels(self, color: tuple) -> None:
         """
