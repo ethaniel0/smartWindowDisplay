@@ -5,6 +5,7 @@ import program_manager
 import display_score
 import time
 import testdisplay
+from general_display import to_rgb, Display
 from threading import Semaphore
 
 #For connecting to the server:
@@ -12,7 +13,7 @@ from threading import Semaphore
 link = 'http://localhost:3000/'
 # link = 'https://smartdormdisplay.fly.dev'
 sio = socketio.Client()
-piDisplay = testdisplay.TestDisplay()
+piDisplay: Display = testdisplay.TestDisplay()
 
 manager = program_manager.ProgramManager(sio, piDisplay)
 join_code = [] 
@@ -85,17 +86,17 @@ def display_large_number(num, section):
         for i in range(5):
             for j in range(3):
                 if piDisplay.digits[num][i][j] == 1:
-                    piDisplay.set_pixel(j + 3, i + 7, testdisplay.to_rgb((218,154,230)))
+                    piDisplay.set_pixel(j + 3, i + 7, to_rgb((218,154,230)))
     elif section == 2:
         for i in range(5):
             for j in range(3):
                 if piDisplay.digits[num][i][j] == 1:
-                    piDisplay.set_pixel(j + 12, i  + 7, testdisplay.to_rgb((173,50,173)))
+                    piDisplay.set_pixel(j + 12, i  + 7, to_rgb((173,50,173)))
     elif section == 3:
         for i in range(5):
             for j in range(3):
                 if piDisplay.digits[num][i][j] == 1:
-                    piDisplay.set_pixel(j + 21, i  + 7, testdisplay.to_rgb((148,3,148)))
+                    piDisplay.set_pixel(j + 21, i  + 7, to_rgb((148,3,148)))
     else:
         print("Invalid section number")
     print("Displaying number: ", num, " in section: ", section)
