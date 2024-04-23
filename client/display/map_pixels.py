@@ -85,10 +85,16 @@ class PixelMapper:
         Ex. get_index(0, 0) = 0
         """
 
-        if self.start_bottom:
-            return x * self.num_pixels_per_strip + y
+        if not self.start_bottom:
+            if x % 2 == 0:
+                return x * self.num_pixels_per_strip + y
+            else:
+                return x * self.num_pixels_per_strip + (self.num_pixels_per_strip - y - 1)  
         else:
-            return x * self.num_pixels_per_strip + (self.num_pixels_per_strip - y - 1)
+            if x % 2 == 0:
+                return x * self.num_pixels_per_strip + (self.num_pixels_per_strip - y - 1)
+            else:
+                return x * self.num_pixels_per_strip + y
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ class ProgramManager:
         self.display = display
 
         self.pages = {
-            "main": ["Duke Game", "Weather", "Games", "Surprise"],
+            "main": ["Duke Game", "Games", "Surprise"],
             "Games": ["Simon", "Snake", "Maze", "Jump", "BadApple"],
             "Duke Game": "Duke Game", 
     

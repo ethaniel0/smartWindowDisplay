@@ -244,7 +244,7 @@ def show_random_game(display):
     place_url(display, opponent_logo_url, img_size=(9, 9), offset = (9*2, 1))
     show_number(display, opponent_score, 2)
 
-    display.display()
+    display.show()
 
 
 if __name__ == "__main__":

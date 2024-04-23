@@ -288,9 +288,10 @@ class Maze(App):
         for i in range(27):
             for j in range(20):
                 if self.maze[j][i] == 1:
-                    self.display.set_pixel(i, j, to_rgb((0, 0, 0)))
-                else:
                     self.display.set_pixel(i, j, to_rgb((255, 255, 255)))
+                else:
+                    self.display.set_pixel(i, j, to_rgb((0, 0, 0)))
+
 
         self.display.set_pixel(self.goal[0], self.goal[1], to_rgb((255, 0, 0)))
         self.display.set_pixel(self.player[0], self.player[1], to_rgb((0, 255, 0)))
@@ -311,7 +312,7 @@ class Maze(App):
                 self.direction = input
                 print("Maze is moving ", self.direction)
                 self.move()
-                self.display.display()
+                self.display.show()
 
         elif self.state == "running":
             if input:

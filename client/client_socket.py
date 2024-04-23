@@ -88,17 +88,17 @@ def display_large_number(num, section):
         for i in range(5):
             for j in range(3):
                 if piDisplay.digits[num][i][j] == 1:
-                    piDisplay.set_pixel(j + 3, i + 7, to_rgb((218,154,230)))
+                    piDisplay.set_pixel(j + 3, i + 7, to_rgb((0,255,0)))
     elif section == 2:
         for i in range(5):
             for j in range(3):
                 if piDisplay.digits[num][i][j] == 1:
-                    piDisplay.set_pixel(j + 12, i  + 7, to_rgb((173,50,173)))
+                    piDisplay.set_pixel(j + 12, i  + 7, to_rgb((0,255,0)))
     elif section == 3:
         for i in range(5):
             for j in range(3):
                 if piDisplay.digits[num][i][j] == 1:
-                    piDisplay.set_pixel(j + 21, i  + 7, to_rgb((148,3,148)))
+                    piDisplay.set_pixel(j + 21, i  + 7, to_rgb((0,255,0)))
     else:
         print("Invalid section number")
     print("Displaying number: ", num, " in section: ", section)
