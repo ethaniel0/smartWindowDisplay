@@ -440,9 +440,14 @@ class Jump(App):
         self.display_course()
         self.last_time = time.perf_counter()
 
-    def move(self, move_self = False): 
-        self.generate_obstacles(.1)
+    def move(self, move_self = False):
+        time_per_move = 0.1 
+        self.generate_obstacles(time_per_move)
         if not move_self:
+            if self.direction == "up" and (self.last_time + time_per_move > time.perf_counter()):
+                self.direction = "level"
+                print("Jump is moving ", self.direction)
+                self.move(True)
             return 
         
         if self.direction == "up":
