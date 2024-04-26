@@ -38,7 +38,7 @@ class LEDDisplay(Display):
         self.num_pixels = num_strips * num_pixels_per_strip
 
         self.pixels = neopixel.NeoPixel(
-            pixel_pin, self.num_pixels, brightness=0.2, auto_write=False, pixel_order=neopixel.RGB
+            pixel_pin, self.num_pixels, brightness=0.5, auto_write=False, pixel_order=neopixel.RGB
         )
 
         self.width = num_strips
