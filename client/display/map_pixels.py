@@ -72,6 +72,29 @@ class PixelMapper:
             leds[i * self.num_pixels_per_strip: (i + 1) * self.num_pixels_per_strip] = col
     
         return leds
+    
+    def get_index(self, x, y):
+        """
+        Get the index of the pixel in the 1D strip
+
+        :param x: The x coordinate
+        :param y: The y coordinate
+
+        :return: The index of the pixel in the 1D strip
+
+        Ex. get_index(0, 0) = 0
+        """
+
+        if not self.start_bottom:
+            if x % 2 == 0:
+                return x * self.num_pixels_per_strip + y
+            else:
+                return x * self.num_pixels_per_strip + (self.num_pixels_per_strip - y - 1)  
+        else:
+            if x % 2 == 0:
+                return x * self.num_pixels_per_strip + (self.num_pixels_per_strip - y - 1)
+            else:
+                return x * self.num_pixels_per_strip + y
 
 
 if __name__ == "__main__":
@@ -94,4 +117,3 @@ if __name__ == "__main__":
     leds = pm.map_pixels(display)
 
     print(leds)
-

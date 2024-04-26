@@ -151,7 +151,7 @@ class Simon(App):
             self.show_sequence()
         elif self.state == "running":
             self.get_input(input)
-        self.display.display()
+        self.display.show()
 
     def add_to_sequence(self):
         self.sequence.append(random.randint(0, 3))
@@ -172,7 +172,7 @@ class Snake(App):
         self.display.clear()
         self.display.set_pixel(self.food[0], self.food[1], to_rgb((255, 0, 0)))
         self.display.set_pixel(self.snake[0][0], self.snake[0][1], to_rgb((0, 255, 0)))
-        self.display.display()
+        self.display.show()
 
     def restart(self):
         self.state = "start"
@@ -201,7 +201,7 @@ class Snake(App):
             elif self.snake[0] in self.snake[1:]:
                 print("You lose!, Score: ", self.score)
                 self.restart()
-            self.display.display()
+            self.display.show()
             self.display.set_pixel(self.food[0], self.food[1], to_rgb((255, 0, 0)))
             if input:
                 self.change_direction(input)
@@ -288,13 +288,14 @@ class Maze(App):
         for i in range(27):
             for j in range(20):
                 if self.maze[j][i] == 1:
-                    self.display.set_pixel(i, j, to_rgb((0, 0, 0)))
-                else:
                     self.display.set_pixel(i, j, to_rgb((255, 255, 255)))
+                else:
+                    self.display.set_pixel(i, j, to_rgb((0, 0, 0)))
+
 
         self.display.set_pixel(self.goal[0], self.goal[1], to_rgb((255, 0, 0)))
         self.display.set_pixel(self.player[0], self.player[1], to_rgb((0, 255, 0)))
-        self.display.display()
+        self.display.show()
 
     def restart(self):
         self.state = "start"
@@ -311,14 +312,14 @@ class Maze(App):
                 self.direction = input
                 print("Maze is moving ", self.direction)
                 self.move()
-                self.display.display()
+                self.display.show()
 
         elif self.state == "running":
             if input:
                 self.change_direction(input)
                 print("Maze is moving ", self.direction)
                 self.move()
-                self.display.display()
+                self.display.show()
             if self.player == self.goal:
                 print("You win!")
                 self.restart()
@@ -379,7 +380,7 @@ class Jump(App):
         for i,j in self.obstacles:
             self.display.set_pixel(i,j, to_rgb((255, 0, 0)))
 
-        self.display.display()
+        self.display.show()
 
     def restart(self):
         self.state = "start"
@@ -468,7 +469,7 @@ class VideoDisplay(App):
     def restart(self):
         self.frame = 0
         self.display.clear()
-        self.display.display()
+        self.display.show()
 
     def update(self, input: str):
         now = time.perf_counter()
@@ -480,7 +481,7 @@ class VideoDisplay(App):
         for i in range(27):
             for j in range(20):
                 self.display.set_pixel(i, j, to_rgb((frame[j][i][0], frame[j][i][1], frame[j][i][2])))
-        self.display.display()
+        self.display.show()
         self.frame += 1
         if self.frame >= len(self.frames):
             self.frame = len(self.frames) - 1

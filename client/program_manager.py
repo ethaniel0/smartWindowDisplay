@@ -95,7 +95,7 @@ class ProgramManager:
                 self.display.clear()
 
             self.display.clear()
-            self.display.display()
+            self.display.show()
             return
         
         if self.startup:
