@@ -99,20 +99,20 @@ class Simon(App):
         seq_num = self.sequence[self.sequence_index]
         color = color_map[seq_num]
         
-        self.show_rect(10, 5, 5, 5, (80, 0, 0))
-        self.show_rect(10, 10, 5, 5, (0, 0, 80))
-        self.show_rect(5, 5, 5, 5, (0, 80, 0))
-        self.show_rect(5, 10, 5, 5, (80, 80, 0))
+        self.show_rect(9, 0, 9, 9, (80, 0, 0))
+        self.show_rect(9, 9, 9, 9, (0, 0, 80))
+        self.show_rect(0, 0, 9, 9, (0, 80, 0))
+        self.show_rect(0, 9, 9, 9, (80, 80, 0))
         
         if now - self.last_time < 0.8:
             if seq_num == 0:
-                self.show_rect(10, 5, 5, 5, color)
+                self.show_rect(9, 0, 9, 9, color)
             elif seq_num == 1:
-                self.show_rect(10, 10, 5, 5, color)
+                self.show_rect(9, 9, 9, 9, color)
             elif seq_num == 2:
-                self.show_rect(5, 5, 5, 5, color)
+                self.show_rect(0, 0, 9, 9, color)
             elif seq_num == 3:
-                self.show_rect(5, 10, 5, 5, color)
+                self.show_rect(0, 9, 9, 9, color)
         
         now = time.perf_counter()
 
@@ -360,6 +360,7 @@ class Jump(App):
         self.ground_level = 10
         self.player = [[1, self.ground_level], [1, self.ground_level - 1], [1, self.ground_level - 2]]
         self.last_time = time.perf_counter()
+        self.last_jump = time.perf_counter()
         self.obstacles = []
     
     def display_course(self):
@@ -424,16 +425,17 @@ class Jump(App):
         if len(self.obstacles) > 0 and self.obstacles[0][0] <= 0:
             self.obstacles.pop(0)
         #randomly generate obstacles
-        if random.random() < 0.3 and (len(self.obstacles) == 0 or self.obstacles[-1][0] < 24):
+        if random.random() < 0.3 and (len(self.obstacles) == 0 or self.obstacles[-1][0] < 23):
             if random.random() < 0.5:
                 self.obstacles.append([26, self.ground_level]) #low obstacle
             else:
                 self.obstacles.append([26, self.ground_level-2]) #high obstacle
 
-        if self.direction == "up":
+        if self.direction == "up" and self.last_jump + 0.5 < time.perf_counter():
             self.direction = "level"
             print("Jump is moving ", self.direction)
             self.move(True)
+            self.last_jump = time.perf_counter()
 
         self.display_course()
         self.last_time = time.perf_counter()

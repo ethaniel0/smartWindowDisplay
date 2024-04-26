@@ -11,9 +11,9 @@ from display.led import LEDDisplay
 
 
 #For connecting to the server:
-link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
+# link = 'https://a2cc0b4b-ccb1-4a02-87ff-fc39ba6504aa-00-2f7d3zg35rpko.janeway.replit.dev/'
 # link = 'http://localhost:3000/'
-# link = 'https://smartdormdisplay.fly.dev'
+link = 'https://smartdormdisplay.fly.dev'
 sio = socketio.Client()
 piDisplay: Display = LEDDisplay(27, 20, True)
 
@@ -33,9 +33,9 @@ static_screen = False
 @sio.on('tryConnect')
 def on_message():
     global display_numbers_flag, join_code
-    randint1 = random.randint(0, 9)
-    randint2 = random.randint(0, 9)
-    randint3 = random.randint(0, 9)
+    randint1 = random.randint(0, 9) * 0
+    randint2 = random.randint(0, 9) * 0
+    randint3 = random.randint(0, 9) * 0
     print('Sending over the numbers: ', randint1, randint2, randint3)
     numstring = str(randint1) + str(randint2) + str(randint3)
     sio.emit('piJoinCode', numstring)
